@@ -1,0 +1,8 @@
+<launch>
+        <param name="robot_description" command="cat $(find al5d-simulation)/urdf/model.urdf" />
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+        <arg name="rvizconfig" default="$(find al5d-simulation)/rviz/urdf.rviz" />
+        
+        <node name="publisher" pkg="al5d-simulation" type="publisher" />
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+</launch>
