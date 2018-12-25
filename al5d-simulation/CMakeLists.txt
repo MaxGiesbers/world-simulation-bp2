@@ -41,6 +41,10 @@ target_link_libraries(LynxMotionSimulator ${catkin_LIBRARIES})
 add_executable(CommandParser src/CommandParser.cpp)
 target_link_libraries(CommandParser ${catkin_LIBRARIES})
 
+
+add_executable(Publisher src/Publisher.cpp)
+target_link_libraries(Publisher ${catkin_LIBRARIES})
+
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}

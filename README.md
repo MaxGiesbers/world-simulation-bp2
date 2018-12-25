@@ -7,3 +7,9 @@ Bug geen robot commando:
 
 export LC_NUMERIC="en_US.UTF-8
 
+
+
+path to text file: 
+
+/src/world-simulation-bp2/al5d-simulation/config/commands.txt
+
