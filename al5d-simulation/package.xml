@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>al5d-simulation</name>
+  <name>al5d_simulation</name>
   <version>0.0.0</version>
-  <description>The al5d-simulation package</description>
+  <description>The al5d_simulation package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -64,6 +64,8 @@
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>tf</exec_depend>
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
