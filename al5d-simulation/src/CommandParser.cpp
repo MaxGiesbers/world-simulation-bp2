@@ -3,7 +3,7 @@
 
 CommandParser::CommandParser()
 {
-
+  msg_subscriber = n.subscribe("msgPublisher", 1000, &CommandParser::messageCallback, this);
 }
 
 CommandParser::~CommandParser()
@@ -11,19 +11,19 @@ CommandParser::~CommandParser()
 
 }
 
-void CommandParser::messageCallback(const std_msgs::String::ConstPtr& msg)
+void CommandParser::messageCallback(const std_msgs::String &msg)
 {
-  ROS_INFO("I heard: [%s]", msg->data.c_str());
+  std::cout << msg.data.c_str() << std::endl;
+  //ROS_INFO("I heard: [%s]", msg->data.c_str());
 }
 
 
 int main(int argc, char** argv) {
 
     ros::init(argc, argv, "CommandParser");
-    CommandParser test;
+    ros::NodeHandle n;
+    
+    CommandParser p;
 
-    test.incomingCommand.channel = 10;
-
-    int testen = test.incomingCommand.channel;
-    std::cout << testen << std::endl;
+    ros::spin();
 }

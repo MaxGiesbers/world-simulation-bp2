@@ -6,18 +6,16 @@
 class CommandParser
 {
 
-    private:
-
-    
-
-    public:
-
+  private:
+  
+  public:
     al5d_simulation::servo_command incomingCommand;
 
     CommandParser();
     ~CommandParser();
 
-    void messageCallback(const std_msgs::String::ConstPtr& msg);
+    void messageCallback(const std_msgs::String &msg);
+    ros::Subscriber msg_subscriber;
+    
     ros::NodeHandle n;
-
 };
