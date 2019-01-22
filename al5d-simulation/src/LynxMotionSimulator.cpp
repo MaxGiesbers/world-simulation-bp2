@@ -28,18 +28,6 @@ int main(int argc, char** argv) {
     while (ros::ok()) {
         std::cout << "geen printlines " << std::endl;
         //update joint_state
-        // joint_state.header.stamp = ros::Time::now();
-        // joint_state.name.resize(3);
-        // joint_state.position.resiz/e(3);
-        // joint_state.name[0] ="upperarm2forearm";
-        // joint_state.position[0] = upperarm2forearm;
-        // joint_state.name[1] ="tilt";
-        // joint_state.position[1] = tilt;
-        // joint_state.name[2] ="periscope";
-        // joint_state.position[2] = height;
-
-
-
         joint_state.header.stamp = ros::Time::now();
         joint_state.name.resize(7);
         joint_state.position.resize(7);
