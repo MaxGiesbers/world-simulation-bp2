@@ -37,6 +37,7 @@ int main(int argc, char **argv)
             {
                 getline(myfile, line);
                 commandMsg.data = line;
+                commandMsg.data +='\r';
                 ROS_INFO("Sending %s command to the controller.", commandMsg.data.c_str());
                 msg_publisher.publish(commandMsg);
             }
