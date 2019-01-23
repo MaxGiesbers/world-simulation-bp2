@@ -1,17 +1,27 @@
+#include "ros/ros.h"
+
+
 class VirtualServo
 {
-private:
-  short channel;
-  short pwm;
-  short movement_speed;
-  short time;
+
 
 public:
-  VirtualServo();
+  VirtualServo(short a_channel);
   ~VirtualServo();
 
   void setChannel(short a_channel);
-  void setPwm(short a_pwm);
+  void setIncomingPwm(short a_incoming_pwm);
   void setMovementSpeed(short a_movement_speed);
   void setTime(short a_time);
+  short pwmToDegrees ();
+
+  short getChannel() const;
+
+  private:
+  short channel;
+  short incoming_pwm;
+  short movement_speed;
+  short time;
+  short current_degrees;
+  
 };

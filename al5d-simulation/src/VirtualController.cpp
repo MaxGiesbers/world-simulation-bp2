@@ -2,7 +2,9 @@
 
 VirtualController::VirtualController() : command_character('\0')
 {
+  initServoList();
   msg_subscriber = n.subscribe("msgPublisher", 1000, &VirtualController::parseMessage, this);
+  ros::Publisher servo_degrees_publisher = n.advertise<al5d_simulation::servo_command>("servo_degrees", 1000);
 }
 
 VirtualController::~VirtualController()
@@ -74,6 +76,7 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
   std::string command = "";
 
   bool end_line = false;
+  
 
   while (!end_line)
   {
@@ -86,32 +89,33 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
       case '#':
       {
         std::cout << "# " << command << std::endl;
-        servo.setChannel(stoi(command));
+        // servo.setChannel(stoi(command));
         break;
       }
 
       case 'P':
       {
         std::cout << "P " << command << std::endl;
-        servo.setPwm(stoi(command));
+        // servo.setIncomingPwm(stoi(command));
         break;
       }
 
       case 'S':
       {
         std::cout << "S " << command << std::endl;
-        servo.setMovementSpeed(stoi(command));
+        // servo.setMovementSpeed(stoi(command));
         break;
       }
 
       case 'T':
       {
         std::cout << "T " << command << std::endl;
-        servo.setTime(stoi(command));
+        // servo.setTime(stoi(command));
         break;
       }
       case '\r':
       {
+        // servo.pwmToDegrees();
         end_line = true;
         break;
       }
@@ -119,11 +123,19 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
   }
 }
 
+void VirtualController::initServoList()
+{
+  const short number_of_servos = 6;
+  for (size_t i = 0; i < 6; i++)
+  {
+    servo_list.push_back(VirtualServo(i));
+  }
+}
+
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "VirtualController");
   ros::NodeHandle n;
-
   VirtualController p;
 
   ros::spin();

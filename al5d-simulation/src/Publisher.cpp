@@ -25,6 +25,7 @@ int main(int argc, char **argv)
     ros::Rate loop_rate(30);
     std_msgs::String commandMsg;
     ros::Publisher msg_publisher = n.advertise<std_msgs::String>("msgPublisher", 1000);
+    
 
     std::string line = "";
     if (myfile.is_open())
