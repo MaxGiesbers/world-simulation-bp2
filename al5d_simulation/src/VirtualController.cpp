@@ -12,20 +12,6 @@ VirtualController::~VirtualController()
 {
 }
 
-void VirtualController::publishTestMessage()
-{
-  servo_degrees_msg.degrees = 90;
-  // 725
-  double value = -(1.0 / 2.0) * std::acos((double)-1);
-  //-1.5708
-
-  // std::cout << value << std::endl;
-  servo_degrees_msg.channel = 0;
-  std::cout << "publish message" << std::endl;
-  std::cout << servo_degrees_msg.degrees << std::endl;
-  servo_degrees_publisher.publish(servo_degrees_msg);
-}
-
 short VirtualController::getFirstIndexPosition(const std::string& message)
 {
   short char_position = 0;
@@ -90,6 +76,8 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
 
   std::string command = "";
 
+
+
   bool end_line = false;
 
   while (!end_line)
@@ -98,33 +86,34 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
     // get command
     command = message.substr(first_position + 1, second_position - 1);
     message.erase(first_position, second_position);
+    
 
     switch (command_character)
     {
       case '#':
       {
-        std::cout << "# " << command << std::endl;
+        //std::cout << "# " << command << std::endl;
         current_servo = getMatchingServo(stoi(command));
         break;
       }
 
       case 'P':
       {
-        std::cout << "P " << command << std::endl;
+        //std::cout << "P " << command << std::endl;
         current_servo.setIncomingPwm(stoi(command));
         break;
       }
 
       case 'S':
       {
-        std::cout << "S " << command << std::endl;
+        //std::cout << "S " << command << std::endl;
         current_servo.setMovementSpeed(stoi(command));
         break;
       }
 
       case 'T':
       {
-        std::cout << "T " << command << std::endl;
+        //std::cout << "T " << command << std::endl;
         current_servo.setTime(stoi(command));
         break;
       }
@@ -147,14 +136,24 @@ void VirtualController::initServoList()
   }
 }
 
-const VirtualServo& VirtualController::getMatchingServo(const short incoming_channel)
+VirtualServo VirtualController::getMatchingServo(const short incoming_channel)
 {
-  // check inbouwen
-  auto servo = find_if(servo_list.begin(), servo_list.end(),
-                       [incoming_channel](VirtualServo& s) { return s.getChannel() == incoming_channel; });
 
-  std::cout << servo->getChannel() << std::endl;
-  return *servo;
+  for(const VirtualServo &s : servo_list)
+  {
+    if(s.getChannel() == incoming_channel)
+    {
+      return s;
+    }
+  }
+  // // check inbouwen
+  // auto servo = find_if(servo_list.begin(), servo_list.end(),
+  //                      [incoming_channel](VirtualServo& s) { return s.getChannel() == incoming_channel; });
+
+  // std::cout << servo->getChannel() << std::endl;
+  // std::cout << servo->time << std::endl;
+  // std::cout << servo->current_degrees << std::endl;
+  // return *servo;
 }
 
 int main(int argc, char** argv)

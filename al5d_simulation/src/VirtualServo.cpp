@@ -16,6 +16,7 @@ void VirtualServo::setChannel(short a_channel)
 }
 void VirtualServo::setIncomingPwm(short a_incoming_pwm)
 {
+  std::cout << "incoming huh? " << a_incoming_pwm;
   incoming_pwm = a_incoming_pwm;
 }
 void VirtualServo::setMovementSpeed(short a_movement_speed)
@@ -38,31 +39,33 @@ void VirtualServo::publishMessage()
   short degrees = pwmToDegrees();
   std::cout << "publish message " << std::endl;
   std::cout << channel << std::endl;
-  std::cout << incoming_pwm << std::endl;
-  std::cout << movement_speed << std::endl;
-  std::cout << time << std::endl;
   std::cout << degrees << std::endl;
+  std::cout << current_degrees << std::endl;
 
-  // //ophogen voor nu
-  // while (degrees != current_degrees)
-  // {
-  //   if (degrees < current_degrees)
-  //   {
-  //     degrees++;
-  //   }
-  //   else if (degrees > current_degrees)
-  //   {
-  //     degrees--;
-  //   }
-  //   servo_degrees_msg.degrees = degrees;
-  //   servo_degrees_msg.channel = channel;
-  //   servo_degrees_publisher.publish(servo_degrees_msg);
-  // }
-  servo_degrees_msg.degrees = degrees;
   servo_degrees_msg.channel = channel;
-  servo_degrees_publisher.publish(servo_degrees_msg);
-}
 
+  // ophogen voor nu
+  while (degrees != current_degrees)
+  {
+    if (current_degrees < degrees)
+    {
+      current_degrees++;
+    }
+    else if (current_degrees > degrees)
+    {
+      current_degrees--;
+    }
+    servo_degrees_msg.degrees = current_degrees;
+    // std::this_thread::sleep_for(75ms);
+
+    std::cout << current_degrees << std::endl;
+    servo_degrees_publisher.publish(servo_degrees_msg);
+  }
+
+  // servo_degrees_msg.degrees = degrees;
+  // servo_degrees_msg.channel = channel;
+  // servo_degrees_publisher.publish(servo_degrees_msg);
+}
 
 short VirtualServo::pwmToDegrees()
 {

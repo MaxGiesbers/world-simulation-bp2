@@ -5,6 +5,9 @@
 #include "al5d_simulation/servo_command.h"
 #include "RobotArmPosition.hpp"
 
+
+#include <thread>
+
 class LynxMotionSimulator {
 
     public:

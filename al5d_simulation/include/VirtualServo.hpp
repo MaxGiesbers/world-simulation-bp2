@@ -1,6 +1,8 @@
 #include "ros/ros.h"
+#include <chrono>
+#include <thread>
 #include "al5d_simulation/servo_command.h"
-
+using namespace std::chrono_literals;
 
 class VirtualServo
 {
@@ -16,14 +18,18 @@ public:
   void publishMessage();
 
   short getChannel() const;
-   
-
-  private:
+  short current_degrees;
   short channel;
   short incoming_pwm;
   short movement_speed;
   short time;
-  short current_degrees;
+
+  private:
+  // short channel;
+  // short incoming_pwm;
+  // short movement_speed;
+  // short time;
+  
   short pwmToDegrees ();
   ros::Publisher servo_degrees_publisher;
   ros::NodeHandle n;

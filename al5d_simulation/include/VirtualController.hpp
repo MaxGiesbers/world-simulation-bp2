@@ -18,17 +18,15 @@ private:
   al5d_simulation::servo_command servo_degrees_msg;
   VirtualServo current_servo;
   LynxMotionSimulator simulator;
-  
 
   void parseMessage(const std_msgs::String& msg);
   void setFirstAndSecondCharPosition(const std::string& message, short& first_position, short& second_position);
   void initServoList();
   short getFirstIndexPosition(const std::string& message);
-  const VirtualServo& getMatchingServo(const short incoming_channel);
+  VirtualServo getMatchingServo(const short incoming_channel);
 
 public:
   VirtualController(const RobotArmPosition& robot_arm_position);
   ~VirtualController();
-  void publishTestMessage();
   ros::Publisher servo_degrees_publisher;
 };
