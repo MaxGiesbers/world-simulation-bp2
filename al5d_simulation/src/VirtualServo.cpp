@@ -1,7 +1,9 @@
 #include "VirtualServo.hpp"
 
-VirtualServo::VirtualServo(short a_channel) : channel(a_channel), incoming_pwm(0), movement_speed(0), time(0), current_degrees(0)
+VirtualServo::VirtualServo(short a_channel)
+  : channel(a_channel), incoming_pwm(0), movement_speed(0), time(0), current_degrees(0)
 {
+  servo_degrees_publisher = n.advertise<al5d_simulation::servo_command>("servo_degrees", 1000);
 }
 
 VirtualServo::~VirtualServo()
@@ -25,27 +27,47 @@ void VirtualServo::setTime(short a_time)
   time = a_time;
 }
 
+short VirtualServo::getChannel() const
+{
+  return channel;
+}
+
+void VirtualServo::publishMessage()
+{
+  // Convert received pwm to degrees
+  short degrees = pwmToDegrees();
+  std::cout << "publish message " << std::endl;
+  std::cout << channel << std::endl;
+  std::cout << incoming_pwm << std::endl;
+  std::cout << movement_speed << std::endl;
+  std::cout << time << std::endl;
+  std::cout << degrees << std::endl;
+
+  //ophogen voor nu
+  while (degrees != current_degrees)
+  {
+    if (degrees < current_degrees)
+    {
+      degrees++;
+    }
+    else if (degrees > current_degrees)
+    {
+      degrees--;
+    }
+    servo_degrees_msg.degrees = degrees;
+    servo_degrees_msg.channel = channel;
+    servo_degrees_publisher.publish(servo_degrees_msg);
+  }
+}
+
 short VirtualServo::pwmToDegrees()
 {
   const short max_pwm = 2500;
-  short min_degrees = -90;
-  short max_degrees = 90;
-  short min_pwm = 500;
+  const short min_degrees = -90;
+  const short max_degrees = 90;
+  const short min_pwm = 500;
 
-  // If needed dont know atm.
-  if (channel == 1)
-  {
-    min_degrees = -30;
-    max_degrees = 90;
-    min_pwm = 1100;
-  }
-  else if (channel == 2)
-  {
-    min_degrees = 0;
-    max_degrees = 135;
-    min_pwm = 650;
-  }
-  short current_degrees =
-      (short)(((long double)(max_degrees - min_degrees) / (long double)(max_pwm - min_pwm)) * (incoming_pwm - min_pwm)) +
-      min_degrees;
+  return (short)(((long double)(max_degrees - min_degrees) / (long double)(max_pwm - min_pwm)) *
+                 (incoming_pwm - min_pwm)) +
+         min_degrees;
 }

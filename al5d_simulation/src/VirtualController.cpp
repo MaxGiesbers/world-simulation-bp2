@@ -1,10 +1,9 @@
 #include "VirtualController.hpp"
 
-VirtualController::VirtualController() : command_character('\0')
+VirtualController::VirtualController(const RobotArmPosition& robot_arm_position) : command_character('\0')
 {
   initServoList();
   msg_subscriber = n.subscribe("msgPublisher", 1000, &VirtualController::parseMessage, this);
-
   servo_degrees_publisher = n.advertise<al5d_simulation::servo_command>("servo_degrees", 1000);
 }
 
@@ -15,6 +14,11 @@ VirtualController::~VirtualController()
 void VirtualController::publishTestMessage()
 {
   servo_degrees_msg.degrees = 90;
+  // 725
+  double value = -(1.0 / 2.0) * std::acos((double)-1);
+  //-1.5708
+
+  // std::cout << value << std::endl;
   servo_degrees_msg.channel = 0;
   std::cout << "publish message" << std::endl;
   std::cout << servo_degrees_msg.degrees << std::endl;
@@ -89,7 +93,9 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
 
   while (!end_line)
   {
+
     setFirstAndSecondCharPosition(message, first_position, second_position);
+    //get command
     command = message.substr(first_position + 1, second_position - 1);
     message.erase(first_position, second_position);
 
@@ -98,33 +104,33 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
       case '#':
       {
         std::cout << "# " << command << std::endl;
-        // servo.setChannel(stoi(command));
+        current_servo = getMatchingServo(stoi(command));
         break;
       }
 
       case 'P':
       {
         std::cout << "P " << command << std::endl;
-        // servo.setIncomingPwm(stoi(command));
+        current_servo.setIncomingPwm(stoi(command));
         break;
       }
 
       case 'S':
       {
         std::cout << "S " << command << std::endl;
-        // servo.setMovementSpeed(stoi(command));
+        current_servo.setMovementSpeed(stoi(command));
         break;
       }
 
       case 'T':
       {
         std::cout << "T " << command << std::endl;
-        // servo.setTime(stoi(command));
+        current_servo.setTime(stoi(command));
         break;
       }
       case '\r':
       {
-        // servo.pwmToDegrees();
+        current_servo.publishMessage();
         end_line = true;
         break;
       }
@@ -141,11 +147,34 @@ void VirtualController::initServoList()
   }
 }
 
+const VirtualServo& VirtualController::getMatchingServo(const short incoming_channel)
+{
+
+  //check inbouwen
+  auto servo = find_if(servo_list.begin(), servo_list.end(), [incoming_channel] 
+    (VirtualServo& s) { return s.getChannel() == incoming_channel; } );
+
+    std::cout << servo->getChannel()  << std::endl;
+   return *servo;
+}
+
 int main(int argc, char** argv)
 {
+  if (argc != 4)
+  {
+    ROS_ERROR("Not enough arguments are given, %d given", argc);
+    return 1;
+  }
+
+  RobotArmPosition position;
+  position.x_pos = atof(argv[1]);
+  position.y_pos = atof(argv[2]);
+  position.z_pos = atof(argv[3]);
+
   ros::init(argc, argv, "VirtualController");
   ros::NodeHandle n;
-  VirtualController p;
+  VirtualController p(position);
+  
   ros::Rate loop_rate(10);
 
   while (ros::ok())
@@ -154,12 +183,12 @@ int main(int argc, char** argv)
     if (p.servo_degrees_publisher.getNumSubscribers() > 0)
     {
       std::cout << "subscriber gevonden " << std::endl;
-       p.publishTestMessage();
+      //p.publishTestMessage();
+      break;
     }
     ros::spinOnce();
     loop_rate.sleep();
   }
- 
 
   ros::spin();
 }

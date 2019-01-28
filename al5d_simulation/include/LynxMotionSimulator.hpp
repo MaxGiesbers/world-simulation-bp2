@@ -3,8 +3,7 @@
 #include <sensor_msgs/JointState.h>
 #include <tf/transform_broadcaster.h>
 #include "al5d_simulation/servo_command.h"
-
-
+#include "RobotArmPosition.hpp"
 
 class LynxMotionSimulator {
 
@@ -16,7 +15,13 @@ class LynxMotionSimulator {
     ros::Publisher joint_publisher;
 
     private:
-    
+
+    geometry_msgs::TransformStamped world_transform;
+    tf::TransformBroadcaster broadcaster;
+    sensor_msgs::JointState joint_state;
+    const double degree;
+    RobotArmPosition robot_arm_position;
+
     ros::NodeHandle n;
 
 
