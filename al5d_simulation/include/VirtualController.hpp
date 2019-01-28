@@ -4,8 +4,8 @@
 #include "al5d_simulation/servo_command.h"
 #include <vector>
 #include "VirtualServo.hpp"
-#include "RobotArmPosition.hpp"
 #include <algorithm>
+#include "LynxMotionSimulator.hpp"
 
 class VirtualController
 {
@@ -17,6 +17,7 @@ private:
   std::vector<VirtualServo> servo_list;
   al5d_simulation::servo_command servo_degrees_msg;
   VirtualServo current_servo;
+  LynxMotionSimulator simulator;
   
 
   void parseMessage(const std_msgs::String& msg);

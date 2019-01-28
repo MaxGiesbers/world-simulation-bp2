@@ -43,22 +43,26 @@ void VirtualServo::publishMessage()
   std::cout << time << std::endl;
   std::cout << degrees << std::endl;
 
-  //ophogen voor nu
-  while (degrees != current_degrees)
-  {
-    if (degrees < current_degrees)
-    {
-      degrees++;
-    }
-    else if (degrees > current_degrees)
-    {
-      degrees--;
-    }
-    servo_degrees_msg.degrees = degrees;
-    servo_degrees_msg.channel = channel;
-    servo_degrees_publisher.publish(servo_degrees_msg);
-  }
+  // //ophogen voor nu
+  // while (degrees != current_degrees)
+  // {
+  //   if (degrees < current_degrees)
+  //   {
+  //     degrees++;
+  //   }
+  //   else if (degrees > current_degrees)
+  //   {
+  //     degrees--;
+  //   }
+  //   servo_degrees_msg.degrees = degrees;
+  //   servo_degrees_msg.channel = channel;
+  //   servo_degrees_publisher.publish(servo_degrees_msg);
+  // }
+  servo_degrees_msg.degrees = degrees;
+  servo_degrees_msg.channel = channel;
+  servo_degrees_publisher.publish(servo_degrees_msg);
 }
+
 
 short VirtualServo::pwmToDegrees()
 {

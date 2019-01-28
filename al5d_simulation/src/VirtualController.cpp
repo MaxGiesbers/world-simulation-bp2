@@ -1,6 +1,7 @@
 #include "VirtualController.hpp"
 
-VirtualController::VirtualController(const RobotArmPosition& robot_arm_position) : command_character('\0')
+VirtualController::VirtualController(const RobotArmPosition& robot_arm_position)
+  : command_character('\0'), simulator(robot_arm_position)
 {
   initServoList();
   msg_subscriber = n.subscribe("msgPublisher", 1000, &VirtualController::parseMessage, this);
@@ -93,9 +94,8 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
 
   while (!end_line)
   {
-
     setFirstAndSecondCharPosition(message, first_position, second_position);
-    //get command
+    // get command
     command = message.substr(first_position + 1, second_position - 1);
     message.erase(first_position, second_position);
 
@@ -149,24 +149,25 @@ void VirtualController::initServoList()
 
 const VirtualServo& VirtualController::getMatchingServo(const short incoming_channel)
 {
+  // check inbouwen
+  auto servo = find_if(servo_list.begin(), servo_list.end(),
+                       [incoming_channel](VirtualServo& s) { return s.getChannel() == incoming_channel; });
 
-  //check inbouwen
-  auto servo = find_if(servo_list.begin(), servo_list.end(), [incoming_channel] 
-    (VirtualServo& s) { return s.getChannel() == incoming_channel; } );
-
-    std::cout << servo->getChannel()  << std::endl;
-   return *servo;
+  std::cout << servo->getChannel() << std::endl;
+  return *servo;
 }
 
 int main(int argc, char** argv)
 {
-  if (argc != 4)
+  if (argc != 6)
   {
-    ROS_ERROR("Not enough arguments are given, %d given", argc);
+    ROS_ERROR("Not enough arguments are given blablall, %d given", argc);
     return 1;
   }
 
+  // initialize position robotarm
   RobotArmPosition position;
+  std::cout << argv[1] << std::endl;
   position.x_pos = atof(argv[1]);
   position.y_pos = atof(argv[2]);
   position.z_pos = atof(argv[3]);
@@ -174,18 +175,19 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "VirtualController");
   ros::NodeHandle n;
   VirtualController p(position);
-  
+
   ros::Rate loop_rate(10);
 
   while (ros::ok())
   {
-    // Check for subscribers
-    if (p.servo_degrees_publisher.getNumSubscribers() > 0)
-    {
-      std::cout << "subscriber gevonden " << std::endl;
-      //p.publishTestMessage();
-      break;
-    }
+    // // Check for subscribers
+    // if (p.servo_degrees_publisher.getNumSubscribers() > 0)
+    // {
+    //   std::cout << "subscriber gevonden " << std::endl;
+    //   //p.publishTestMessage();
+    //   break;
+    // }
+
     ros::spinOnce();
     loop_rate.sleep();
   }

@@ -19,6 +19,8 @@ rosrun al5d_simulation VirtualController 0.0 0.0 0.0
 
 
 
+gripper lijkt andere waardes te hebben beginnend van 1500 tot 1535 ongeveer.
+
 info over de servos
 // servoList.push_back(Lowlevel::Servo("Base", -90, 90, 500, 2500));
     // servoList.push_back(Lowlevel::Servo("Shoulder", -30, 90, 1100, 2500));

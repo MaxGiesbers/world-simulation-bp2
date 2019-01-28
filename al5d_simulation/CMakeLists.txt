@@ -35,18 +35,19 @@ catkin_package()
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_executable(LynxMotionSimulator src/LynxMotionSimulator.cpp)
-add_dependencies(LynxMotionSimulator al5d_simulation_generate_messages_cpp)
-target_link_libraries(LynxMotionSimulator ${catkin_LIBRARIES})
+# add_executable(LynxMotionSimulator src/LynxMotionSimulator.cpp)
+# add_dependencies(LynxMotionSimulator al5d_simulation_generate_messages_cpp)
+# target_link_libraries(LynxMotionSimulator ${catkin_LIBRARIES})
 
 
 add_executable(
-  VirtualController 
+  LynxMotionSimulator 
   src/VirtualController.cpp 
-  src/VirtualServo.cpp)
+  src/VirtualServo.cpp
+  src/LynxMotionSimulator.cpp)
 
-add_dependencies(VirtualController al5d_simulation_generate_messages_cpp)
-target_link_libraries(VirtualController ${catkin_LIBRARIES})
+add_dependencies(LynxMotionSimulator al5d_simulation_generate_messages_cpp)
+target_link_libraries(LynxMotionSimulator ${catkin_LIBRARIES})
 
 
 add_executable(Publisher src/Publisher.cpp)

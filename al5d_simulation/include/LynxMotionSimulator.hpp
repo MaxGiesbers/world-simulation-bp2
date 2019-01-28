@@ -8,7 +8,7 @@
 class LynxMotionSimulator {
 
     public:
-    LynxMotionSimulator();
+    LynxMotionSimulator(const RobotArmPosition& a_robot_arm_position);
     ~LynxMotionSimulator();
     void publishCommands( const al5d_simulation::servo_command& servo_degrees);
     ros::Subscriber servo_subscriber;
@@ -16,6 +16,7 @@ class LynxMotionSimulator {
 
     private:
 
+    void initializeJoints();
     geometry_msgs::TransformStamped world_transform;
     tf::TransformBroadcaster broadcaster;
     sensor_msgs::JointState joint_state;
