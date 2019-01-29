@@ -1,29 +1,39 @@
 #include "VirtualServo.hpp"
 
-VirtualServo::VirtualServo(short a_channel)
-  : channel(a_channel), incoming_pwm(0), movement_speed(0), time(0), current_degrees(0)
+VirtualServo::VirtualServo() : channel(0), incoming_pwm(0), movement_speed(0), time(0), current_degrees(0)
 {
-  servo_degrees_publisher = n.advertise<al5d_simulation::servo_command>("servo_degrees", 1000);
 }
 
 VirtualServo::~VirtualServo()
 {
 }
 
+VirtualServo::VirtualServo(const VirtualServo& a_servo)
+  : channel(a_servo.channel)
+  , incoming_pwm(a_servo.incoming_pwm)
+  , movement_speed(a_servo.movement_speed)
+  , time(a_servo.time)
+  , current_degrees(a_servo.current_degrees)
+{
+}
+
+short VirtualServo::getIncomingPWM() const
+{
+  return incoming_pwm;
+}
 void VirtualServo::setChannel(short a_channel)
 {
   channel = a_channel;
 }
-void VirtualServo::setIncomingPwm(short a_incoming_pwm)
+void VirtualServo::setIncomingPwm(const short a_incoming_pwm)
 {
-  std::cout << "incoming huh? " << a_incoming_pwm;
   incoming_pwm = a_incoming_pwm;
 }
-void VirtualServo::setMovementSpeed(short a_movement_speed)
+void VirtualServo::setMovementSpeed(const short a_movement_speed)
 {
   movement_speed = a_movement_speed;
 }
-void VirtualServo::setTime(short a_time)
+void VirtualServo::setTime(const short a_time)
 {
   time = a_time;
 }
@@ -33,38 +43,14 @@ short VirtualServo::getChannel() const
   return channel;
 }
 
-void VirtualServo::publishMessage()
+void VirtualServo::setCurrentDegrees(const short a_current_degrees)
 {
-  // Convert received pwm to degrees
-  short degrees = pwmToDegrees();
-  std::cout << "publish message " << std::endl;
-  std::cout << channel << std::endl;
-  std::cout << degrees << std::endl;
-  std::cout << current_degrees << std::endl;
+  current_degrees = a_current_degrees;
+}
 
-  servo_degrees_msg.channel = channel;
-
-  // ophogen voor nu
-  while (degrees != current_degrees)
-  {
-    if (current_degrees < degrees)
-    {
-      current_degrees++;
-    }
-    else if (current_degrees > degrees)
-    {
-      current_degrees--;
-    }
-    servo_degrees_msg.degrees = current_degrees;
-    // std::this_thread::sleep_for(75ms);
-
-    std::cout << current_degrees << std::endl;
-    servo_degrees_publisher.publish(servo_degrees_msg);
-  }
-
-  // servo_degrees_msg.degrees = degrees;
-  // servo_degrees_msg.channel = channel;
-  // servo_degrees_publisher.publish(servo_degrees_msg);
+short VirtualServo::getCurrentDegrees() const
+{
+  return current_degrees;
 }
 
 short VirtualServo::pwmToDegrees()

@@ -3,7 +3,6 @@
 LynxMotionSimulator::LynxMotionSimulator(const RobotArmPosition& a_robot_arm_position)
   : degree(M_PI / 180), robot_arm_position(a_robot_arm_position)
 {
-  std::cout << "initialize joints " << std::endl;
   initializeJoints();
   servo_subscriber = n.subscribe("servo_degrees", 1000, &LynxMotionSimulator::publishCommands, this);
   joint_publisher = n.advertise<sensor_msgs::JointState>("joint_states", 1);
@@ -41,8 +40,8 @@ void LynxMotionSimulator::publishCommands(const al5d_simulation::servo_command& 
   joint_state.header.stamp = ros::Time::now();
   short degrees = servo_degrees.degrees;
   short channel = servo_degrees.channel;
-  std::cout << "received command:" << degrees<< std::endl;
-  std::cout << "servo channel: " << channel << std::endl;
+  // std::cout << "received command:" << degrees<< std::endl;
+  // std::cout << "servo channel: " << channel << std::endl;
 
   //set received channel en position in radians
   joint_state.position[channel] = degrees * M_PI / 180.0;
@@ -53,7 +52,7 @@ void LynxMotionSimulator::publishCommands(const al5d_simulation::servo_command& 
   
   using namespace std::chrono_literals;
   world_transform.transform.rotation = tf::createQuaternionMsgFromYaw(180 * degree);
-  std::this_thread::sleep_for(75ms);
+  std::this_thread::sleep_for(20ms);
   // send the joint state and transform
   joint_publisher.publish(joint_state);
   broadcaster.sendTransform(world_transform);

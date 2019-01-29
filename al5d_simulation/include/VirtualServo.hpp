@@ -1,37 +1,30 @@
 #include "ros/ros.h"
 #include <chrono>
 #include <thread>
-#include "al5d_simulation/servo_command.h"
 using namespace std::chrono_literals;
 
 class VirtualServo
 {
 public:
-  VirtualServo(short a_channel = 0);
+  VirtualServo();
   ~VirtualServo();
+  VirtualServo(const VirtualServo& a_servo);
 
   void setChannel(short a_channel);
-  void setIncomingPwm(short a_incoming_pwm);
-  void setMovementSpeed(short a_movement_speed);
-  void setTime(short a_time);
-  
-  void publishMessage();
+  void setIncomingPwm(const short a_incoming_pwm);
+  void setCurrentDegrees(const short a_current_degrees);
+  void setMovementSpeed(const short a_movement_speed);
+  void setTime(const short a_time);
 
   short getChannel() const;
-  short current_degrees;
+  short getCurrentDegrees() const;
+  short getIncomingPWM() const;
+  short pwmToDegrees();
+
+private:
   short channel;
   short incoming_pwm;
   short movement_speed;
   short time;
-
-  private:
-  // short channel;
-  // short incoming_pwm;
-  // short movement_speed;
-  // short time;
-  
-  short pwmToDegrees ();
-  ros::Publisher servo_degrees_publisher;
-  ros::NodeHandle n;
-  al5d_simulation::servo_command servo_degrees_msg;
+  short current_degrees;
 };

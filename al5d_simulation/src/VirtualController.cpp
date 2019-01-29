@@ -76,9 +76,10 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
 
   std::string command = "";
 
-
-
   bool end_line = false;
+  bool send_command = false;
+
+  VirtualServo current_servo;
 
   while (!end_line)
   {
@@ -86,40 +87,48 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
     // get command
     command = message.substr(first_position + 1, second_position - 1);
     message.erase(first_position, second_position);
-    
 
     switch (command_character)
     {
       case '#':
       {
-        //std::cout << "# " << command << std::endl;
-        current_servo = getMatchingServo(stoi(command));
+        if (send_command)
+        {
+          publishMessage(current_servo);
+          send_command = false;
+        }
+        std::cout << "# " << command << std::endl;
+        current_servo.setChannel(stoi(command));
+        send_command = true;
+
         break;
       }
 
       case 'P':
       {
-        //std::cout << "P " << command << std::endl;
+        std::cout << "P " << command << std::endl;
         current_servo.setIncomingPwm(stoi(command));
         break;
       }
 
       case 'S':
       {
-        //std::cout << "S " << command << std::endl;
+        std::cout << "S " << command << std::endl;
         current_servo.setMovementSpeed(stoi(command));
         break;
       }
 
       case 'T':
       {
-        //std::cout << "T " << command << std::endl;
+        std::cout << "T " << command << std::endl;
         current_servo.setTime(stoi(command));
         break;
       }
       case '\r':
       {
-        current_servo.publishMessage();
+        // publih
+        publishMessage(current_servo);
+        std::cout << "publish /r " << std::endl;
         end_line = true;
         break;
       }
@@ -132,28 +141,45 @@ void VirtualController::initServoList()
   const short number_of_servos = 6;
   for (size_t i = 0; i < 6; i++)
   {
-    servo_list.push_back(VirtualServo(i));
+    VirtualServo servo;
+    servo.setChannel(i);
+    servo_list.push_back(servo);
   }
 }
 
-VirtualServo VirtualController::getMatchingServo(const short incoming_channel)
+void VirtualController::publishMessage(const VirtualServo& servo)
 {
-
-  for(const VirtualServo &s : servo_list)
-  {
-    if(s.getChannel() == incoming_channel)
-    {
-      return s;
-    }
-  }
   // // check inbouwen
-  // auto servo = find_if(servo_list.begin(), servo_list.end(),
-  //                      [incoming_channel](VirtualServo& s) { return s.getChannel() == incoming_channel; });
+  auto found_servo = find_if(servo_list.begin(), servo_list.end(),
+                             [servo](VirtualServo& s) { return s.getChannel() == servo.getChannel(); });
 
-  // std::cout << servo->getChannel() << std::endl;
-  // std::cout << servo->time << std::endl;
-  // std::cout << servo->current_degrees << std::endl;
-  // return *servo;
+
+  //add speed and time
+  found_servo->setChannel(servo.getChannel());
+  found_servo->setIncomingPwm(servo.getIncomingPWM());
+
+  servo_degrees_msg.channel = found_servo->getChannel();
+
+  short degrees = found_servo->pwmToDegrees();
+
+  while (degrees != found_servo->getCurrentDegrees())
+  {
+    short current_degrees = found_servo->getCurrentDegrees();
+    if (current_degrees < degrees)
+    {
+      current_degrees++;
+    }
+    else if (current_degrees > degrees)
+    {
+      current_degrees--;
+    }
+    found_servo->setCurrentDegrees(current_degrees);
+    servo_degrees_msg.degrees = current_degrees;
+    // std::this_thread::sleep_for(75ms);
+
+    // std::cout << current_degrees << std::endl;
+    servo_degrees_publisher.publish(servo_degrees_msg);
+  }
 }
 
 int main(int argc, char** argv)
@@ -166,7 +192,6 @@ int main(int argc, char** argv)
 
   // initialize position robotarm
   RobotArmPosition position;
-  std::cout << argv[1] << std::endl;
   position.x_pos = atof(argv[1]);
   position.y_pos = atof(argv[2]);
   position.z_pos = atof(argv[3]);
@@ -179,14 +204,6 @@ int main(int argc, char** argv)
 
   while (ros::ok())
   {
-    // // Check for subscribers
-    // if (p.servo_degrees_publisher.getNumSubscribers() > 0)
-    // {
-    //   std::cout << "subscriber gevonden " << std::endl;
-    //   //p.publishTestMessage();
-    //   break;
-    // }
-
     ros::spinOnce();
     loop_rate.sleep();
   }
