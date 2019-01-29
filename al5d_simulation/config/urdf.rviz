@@ -7,7 +7,7 @@ Panels:
         - /Global Options1
         - /Status1
         - /RobotModel1
-        - /TF1
+        - /Marker1
       Splitter Ratio: 0.5
     Tree Height: 557
   - Class: rviz/Selection
@@ -76,25 +76,13 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
-    - Class: rviz/TF
+    - Class: rviz/Marker
       Enabled: true
-      Frame Timeout: 15
-      Frames:
-        All Enabled: true
-        base_link:
-          Value: true
-        right_leg:
-          Value: true
-      Marker Scale: 0.5
-      Name: TF
-      Show Arrows: true
-      Show Axes: true
-      Show Names: true
-      Tree:
-        base_link:
-          right_leg:
-            {}
-      Update Interval: 0
+      Marker Topic: cup_1
+      Name: Marker
+      Namespaces:
+        cup_1: true
+      Queue Size: 100
       Value: true
   Enabled: true
   Global Options:

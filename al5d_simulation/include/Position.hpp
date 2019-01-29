@@ -1,4 +1,4 @@
-struct RobotArmPosition
+struct Position
 {
     double x_pos;
     double y_pos;

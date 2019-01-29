@@ -25,7 +25,7 @@ private:
   void publishMessage(const VirtualServo& servo);
 
 public:
-  VirtualController(const RobotArmPosition& robot_arm_position);
+  VirtualController(const Position& robot_arm_position);
   ~VirtualController();
   ros::Publisher servo_degrees_publisher;
 };

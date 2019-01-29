@@ -1,6 +1,6 @@
 #include "LynxMotionSimulator.hpp"
 
-LynxMotionSimulator::LynxMotionSimulator(const RobotArmPosition& a_robot_arm_position)
+LynxMotionSimulator::LynxMotionSimulator(const Position& a_robot_arm_position)
   : degree(M_PI / 180), robot_arm_position(a_robot_arm_position)
 {
   initializeJoints();
@@ -56,4 +56,5 @@ void LynxMotionSimulator::publishCommands(const al5d_simulation::servo_command& 
   // send the joint state and transform
   joint_publisher.publish(joint_state);
   broadcaster.sendTransform(world_transform);
+
 }

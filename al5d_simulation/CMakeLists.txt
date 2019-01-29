@@ -54,6 +54,14 @@ add_executable(Publisher src/Publisher.cpp)
 add_dependencies(Publisher al5d_simulation_generate_messages_cpp)
 target_link_libraries(Publisher ${catkin_LIBRARIES})
 
+
+add_executable(
+CupSimulator
+src/CupSimulator.cpp
+src/Cup.cpp)
+add_dependencies(CupSimulator al5d_simulation_generate_messages_cpp)
+target_link_libraries(CupSimulator ${catkin_LIBRARIES})
+
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}

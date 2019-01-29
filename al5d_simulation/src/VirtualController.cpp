@@ -1,6 +1,6 @@
 #include "VirtualController.hpp"
 
-VirtualController::VirtualController(const RobotArmPosition& robot_arm_position)
+VirtualController::VirtualController(const Position& robot_arm_position)
   : command_character('\0'), simulator(robot_arm_position)
 {
   initServoList();
@@ -191,14 +191,14 @@ int main(int argc, char** argv)
   }
 
   // initialize position robotarm
-  RobotArmPosition position;
-  position.x_pos = atof(argv[1]);
-  position.y_pos = atof(argv[2]);
-  position.z_pos = atof(argv[3]);
+  Position robot_arm_position;
+  robot_arm_position.x_pos = atof(argv[1]);
+  robot_arm_position.y_pos = atof(argv[2]);
+  robot_arm_position.z_pos = atof(argv[3]);
 
   ros::init(argc, argv, "VirtualController");
   ros::NodeHandle n;
-  VirtualController p(position);
+  VirtualController p(robot_arm_position);
 
   ros::Rate loop_rate(10);
 
