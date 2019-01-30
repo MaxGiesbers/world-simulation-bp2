@@ -46,31 +46,22 @@ Cup::~Cup()
 {
 }
 
+void Cup::simulate()
+{
+  ros::Rate loop_rate(10);
+  while (ros::ok())
+  {
+    world_transform.header.stamp = ros::Time::now();
+    cup_marker.header.stamp = ros::Time::now();
+    publishStatus();
+    broadcaster.sendTransform(world_transform);
+    cup_publisher.publish(cup_marker);
+    ros::spinOnce();
+    loop_rate.sleep();
+  }
+}
 void Cup::publishStatus()
 {
-//   world_transform.header.stamp = ros::Time::now();
-  
-
-  //   tf::StampedTransform tf_world_cup;
-
-  //   try
-  //   {
-  //     listener.waitForTransform("world", cup_name, ros::Time(0), ros::Duration(0.5));
-  //     listener.waitForTransform("gripper_right", cup_name, ros::Time(0), ros::Duration(0.5));
-  //     listener.lookupTransform("world", cup_name, ros::Time(0), tf_world_cup);
-
-  //     // if (listener.canTransform("gripper_right", cup_name, ros::Time(0)))
-  //     // {
-  //     listener.lookupTransform("gripper_right", cup_name, ros::Time(0), transform);
-  //     //   std::cout << transform.getOrigin().x() * 1000 << std::endl;
-  //     //   std::cout << "komt in in lookup" << std::endl;
-  //   }
-  //   catch (tf::TransformException ex)
-  //   {
-  //     ROS_ERROR("%s", ex.what());
-  //     ros::Duration(1.0).sleep();
-  //   }
-
   tf::StampedTransform tf_world_cup;
   tf::StampedTransform tf_grippper_right_cup;
   tf::StampedTransform tf_grippper_left_cup;
@@ -79,25 +70,18 @@ void Cup::publishStatus()
   try
   {
     // listener.waitForTransform("world", cup_name, ros::Time(0), ros::Duration(0.5));
-    // listener.waitForTransform("gripper_right", cup_name, ros::Time(0), ros::Duration(0.5));
+    listener.waitForTransform("gripper_right", cup_name, ros::Time(0), ros::Duration(0.5));
     // listener.waitForTransform("gripper_left", cup_name, ros::Time(0), ros::Duration(0.5));
-    listener.lookupTransform("world", cup_name, t, tf_world_cup);
+    listener.lookupTransform("world", cup_name, ros::Time(0), tf_world_cup);
 
     // if (listener.canTransform("gripper_right", cup_name, ros::Time(0)))
     // {
     listener.lookupTransform("gripper_right", cup_name, t, tf_grippper_right_cup);
     std::cout << "can transform?" << std::endl;
-    // }
-    // if (listener.canTransform("gripper_left", cup_name, ros::Time(0)))
-    // {
-    //   listener.lookupTransform("gripper_left", cup_name, ros::Time(0), tf_grippper_left_cup);
   }
   catch (tf::TransformException& ex)
   {
     ROS_ERROR("%s", ex.what());
     ros::Duration(1.0).sleep();
   }
-
-  broadcaster.sendTransform(world_transform);
-  cup_publisher.publish(cup_marker);
 }
