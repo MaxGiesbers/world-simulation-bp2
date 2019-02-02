@@ -6,13 +6,15 @@
 #include "Position.hpp"
 
 #include <thread>
+#include <mutex>
 
 class LynxMotionSimulator
 {
 public:
   LynxMotionSimulator(const Position& a_robot_arm_position);
   ~LynxMotionSimulator();
-  void publishCommands(const al5d_simulation::servo_command& servo_degrees);
+  void callBack(const al5d_simulation::servo_command& servo_degrees);
+  void publishStatesOfJoints();
   ros::Subscriber servo_subscriber;
   ros::Publisher joint_publisher;
 
@@ -23,6 +25,10 @@ private:
   sensor_msgs::JointState joint_state;
   const double degree;
   Position robot_arm_position;
+  std::mutex angle_mutex_;
+
+  short current_degrees;
+  short current_channel;
 
   ros::NodeHandle n;
 };

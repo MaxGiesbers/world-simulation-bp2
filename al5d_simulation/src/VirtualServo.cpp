@@ -63,4 +63,5 @@ short VirtualServo::pwmToDegrees()
   return (short)(((long double)(max_degrees - min_degrees) / (long double)(max_pwm - min_pwm)) *
                  (incoming_pwm - min_pwm)) +
          min_degrees;
+
 }

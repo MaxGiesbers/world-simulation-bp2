@@ -53,8 +53,9 @@ void Cup::simulate()
   {
     world_transform.header.stamp = ros::Time::now();
     cup_marker.header.stamp = ros::Time::now();
-    publishStatus();
+
     broadcaster.sendTransform(world_transform);
+    publishStatus();
     cup_publisher.publish(cup_marker);
     ros::spinOnce();
     loop_rate.sleep();
@@ -65,19 +66,35 @@ void Cup::publishStatus()
   tf::StampedTransform tf_world_cup;
   tf::StampedTransform tf_grippper_right_cup;
   tf::StampedTransform tf_grippper_left_cup;
-  ros::Time t = ros::Time(0);
-
   try
   {
-    // listener.waitForTransform("world", cup_name, ros::Time(0), ros::Duration(0.5));
+    listener.waitForTransform("world", cup_name, ros::Time(0), ros::Duration(0.5));
     listener.waitForTransform("gripper_right", cup_name, ros::Time(0), ros::Duration(0.5));
-    // listener.waitForTransform("gripper_left", cup_name, ros::Time(0), ros::Duration(0.5));
+    listener.waitForTransform("gripper_left", cup_name, ros::Time(0), ros::Duration(0.5));
     listener.lookupTransform("world", cup_name, ros::Time(0), tf_world_cup);
 
     // if (listener.canTransform("gripper_right", cup_name, ros::Time(0)))
     // {
-    listener.lookupTransform("gripper_right", cup_name, t, tf_grippper_right_cup);
-    std::cout << "can transform?" << std::endl;
+    listener.lookupTransform("gripper_left", cup_name, ros::Time(0), tf_grippper_right_cup);
+
+    double diff_right_x = tf_grippper_right_cup.getOrigin().x() * 1000;
+    double diff_right_y = tf_grippper_right_cup.getOrigin().y() * 1000;
+    double diff_right_z = tf_grippper_right_cup.getOrigin().z() * 1000;
+
+    // std::cout << "x" <<  diff_right_x << std::endl;
+    // std::cout << "y" << diff_right_y << std::endl;
+    // std::cout << "z" << diff_right_z << std::endl;
+
+
+    if(diff_right_z < 4)
+    {
+       world_transform.header.frame_id = "gripper_right";
+        cup_marker.header.frame_id = "gripper_right";
+
+      world_transform.transform.translation.z = tf_grippper_right_cup.getOrigin().z();
+      cup_marker.pose.position.z = tf_grippper_right_cup.getOrigin().z();
+    }
+    // std::cout << "can transform?" << std::endl;
   }
   catch (tf::TransformException& ex)
   {

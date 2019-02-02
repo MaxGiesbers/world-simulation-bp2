@@ -1,10 +1,10 @@
 #include "LynxMotionSimulator.hpp"
 
 LynxMotionSimulator::LynxMotionSimulator(const Position& a_robot_arm_position)
-  : degree(M_PI / 180), robot_arm_position(a_robot_arm_position)
+  : degree(M_PI / 180), robot_arm_position(a_robot_arm_position), current_degrees(0), current_channel(0)
 {
   initializeJoints();
-  servo_subscriber = n.subscribe("servo_degrees", 1000, &LynxMotionSimulator::publishCommands, this);
+  servo_subscriber = n.subscribe("servo_degrees", 1000, &LynxMotionSimulator::callBack, this);
   joint_publisher = n.advertise<sensor_msgs::JointState>("joint_states", 1);
 }
 
@@ -32,23 +32,32 @@ void LynxMotionSimulator::initializeJoints()
   }
 }
 
+void LynxMotionSimulator::publishStatesOfJoints()
+{
+  joint_state.header.stamp = ros::Time::now();
+  world_transform.header.stamp = ros::Time::now();
+  world_transform.transform.rotation = tf::createQuaternionMsgFromYaw(180 * degree);
+
+  joint_publisher.publish(joint_state);
+  broadcaster.sendTransform(world_transform);
+}
+
 LynxMotionSimulator::~LynxMotionSimulator()
 {
 }
 
-void LynxMotionSimulator::publishCommands(const al5d_simulation::servo_command& servo_degrees)
+void LynxMotionSimulator::callBack(const al5d_simulation::servo_command& servo_degrees)
 {
+  std::lock_guard<std::mutex> guard(angle_mutex_);
   joint_state.header.stamp = ros::Time::now();
-  short degrees = servo_degrees.degrees;
-  short channel = servo_degrees.channel;
+  current_degrees = servo_degrees.degrees;
+  current_channel = servo_degrees.channel;
+
+ 
 
   // set received channel en position in radians
-  joint_state.position[channel] = degrees * M_PI / 180.0;
+  joint_state.position[current_channel] = current_degrees * M_PI / 180.0;
 
   using namespace std::chrono_literals;
-  world_transform.transform.rotation = tf::createQuaternionMsgFromYaw(180 * degree);
   std::this_thread::sleep_for(20ms);
-  // send the joint state and transform
-  joint_publisher.publish(joint_state);
-  broadcaster.sendTransform(world_transform);
 }

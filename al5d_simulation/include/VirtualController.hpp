@@ -16,8 +16,7 @@ private:
   ros::Subscriber msg_subscriber;
   std::vector<VirtualServo> servo_list;
   al5d_simulation::servo_command servo_degrees_msg;
-  LynxMotionSimulator simulator;
-
+  
   void parseMessage(const std_msgs::String& msg);
   void setFirstAndSecondCharPosition(const std::string& message, short& first_position, short& second_position);
   void initServoList();
@@ -26,6 +25,7 @@ private:
 
 public:
   VirtualController(const Position& robot_arm_position);
+
   ~VirtualController();
   ros::Publisher servo_degrees_publisher;
 };

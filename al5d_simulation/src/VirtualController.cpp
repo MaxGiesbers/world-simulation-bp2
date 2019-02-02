@@ -1,7 +1,7 @@
 #include "VirtualController.hpp"
+#include <thread>
 
-VirtualController::VirtualController(const Position& robot_arm_position)
-  : command_character('\0'), simulator(robot_arm_position)
+VirtualController::VirtualController(const Position& robot_arm_position) : command_character('\0')
 {
   initServoList();
   msg_subscriber = n.subscribe("msgPublisher", 1000, &VirtualController::parseMessage, this);
@@ -153,32 +153,56 @@ void VirtualController::publishMessage(const VirtualServo& servo)
   auto found_servo = find_if(servo_list.begin(), servo_list.end(),
                              [servo](VirtualServo& s) { return s.getChannel() == servo.getChannel(); });
 
-
-  //add speed and time
+  // add speed and time
   found_servo->setChannel(servo.getChannel());
   found_servo->setIncomingPwm(servo.getIncomingPWM());
 
   servo_degrees_msg.channel = found_servo->getChannel();
 
-  short degrees = found_servo->pwmToDegrees();
+  short degrees = found_servo->pwmToDegrees(); 
 
   while (degrees != found_servo->getCurrentDegrees())
   {
     short current_degrees = found_servo->getCurrentDegrees();
-    if (current_degrees < degrees)
+
+    if (servo.getChannel() == 5 || servo.getChannel() == 6)
     {
-      current_degrees++;
+      if (current_degrees < degrees)
+      {
+        current_degrees++;
+      }
+      else if (current_degrees > degrees)
+      {
+        current_degrees--;
+      }
     }
-    else if (current_degrees > degrees)
+    else
     {
-      current_degrees--;
+      if (current_degrees < degrees)
+      {
+        current_degrees++;
+      }
+      else if (current_degrees > degrees)
+      {
+        current_degrees--;
+      }
     }
+    std::cout << current_degrees << std::endl;
     found_servo->setCurrentDegrees(current_degrees);
     servo_degrees_msg.degrees = current_degrees;
-    // std::this_thread::sleep_for(75ms);
-
-    // std::cout << current_degrees << std::endl;
     servo_degrees_publisher.publish(servo_degrees_msg);
+  }
+}
+
+void runRobotArmSimulation(Position robot_arm_position)
+{
+  LynxMotionSimulator simulator(robot_arm_position);
+  ros::Rate rate(10);
+
+  while (ros::ok())
+  {
+    simulator.publishStatesOfJoints();
+    rate.sleep();
   }
 }
 
@@ -186,7 +210,7 @@ int main(int argc, char** argv)
 {
   if (argc != 6)
   {
-    ROS_ERROR("Not enough arguments are given blablall, %d given", argc);
+    ROS_ERROR("Not enough arguments are given , %d given", argc);
     return 1;
   }
 
@@ -198,15 +222,11 @@ int main(int argc, char** argv)
 
   ros::init(argc, argv, "VirtualController");
   ros::NodeHandle n;
+  std::thread robot_arm_simulation(runRobotArmSimulation, robot_arm_position);
   VirtualController p(robot_arm_position);
 
-  ros::Rate loop_rate(10);
-
-  while (ros::ok())
-  {
-    ros::spinOnce();
-    loop_rate.sleep();
-  }
-
   ros::spin();
+  robot_arm_simulation.join();
+
+  return 0;
 }
