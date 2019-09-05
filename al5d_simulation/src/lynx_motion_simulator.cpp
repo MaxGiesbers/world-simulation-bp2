@@ -1,4 +1,4 @@
-#include "LynxMotionSimulator.hpp"
+#include "lynx_motion_simulator.hpp"
 
 LynxMotionSimulator::LynxMotionSimulator(const Position& a_robot_arm_position)
   : degree(M_PI / 180), robot_arm_position(a_robot_arm_position), current_degrees(0), current_channel(0)
@@ -52,8 +52,6 @@ void LynxMotionSimulator::callBack(const al5d_simulation::servo_command& servo_d
   joint_state.header.stamp = ros::Time::now();
   current_degrees = servo_degrees.degrees;
   current_channel = servo_degrees.channel;
-
- 
 
   // set received channel en position in radians
   joint_state.position[current_channel] = current_degrees * M_PI / 180.0;

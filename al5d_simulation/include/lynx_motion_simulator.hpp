@@ -3,7 +3,7 @@
 #include <sensor_msgs/JointState.h>
 #include <tf/transform_broadcaster.h>
 #include "al5d_simulation/servo_command.h"
-#include "Position.hpp"
+#include "position.hpp"
 
 #include <thread>
 #include <mutex>
@@ -26,7 +26,6 @@ private:
   const double degree;
   Position robot_arm_position;
   std::mutex angle_mutex_;
-
   short current_degrees;
   short current_channel;
 

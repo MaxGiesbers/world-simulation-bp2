@@ -1,4 +1,4 @@
-#include "VirtualServo.hpp"
+#include "virtual_servo.hpp"
 
 VirtualServo::VirtualServo() : channel(0), incoming_pwm(0), movement_speed(0), time(0), current_degrees(0)
 {
@@ -63,5 +63,4 @@ short VirtualServo::pwmToDegrees()
   return (short)(((long double)(max_degrees - min_degrees) / (long double)(max_pwm - min_pwm)) *
                  (incoming_pwm - min_pwm)) +
          min_degrees;
-
 }

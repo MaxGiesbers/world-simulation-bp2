@@ -1,5 +1,5 @@
 #include <tf/transform_listener.h>
-#include "Cup.hpp"
+#include "cup.hpp"
 
 int main(int argc, char** argv)
 {
@@ -8,7 +8,7 @@ int main(int argc, char** argv)
     ROS_ERROR("Not enough arguments are given, %d given", argc);
     return 1;
   }
-  
+
   ros::init(argc, argv, "CupSimulation");
 
   Position cup_position;

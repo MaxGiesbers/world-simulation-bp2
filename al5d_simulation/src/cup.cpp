@@ -1,4 +1,4 @@
-#include "Cup.hpp"
+#include "cup.hpp"
 
 Cup::Cup(std::string a_cup_name, Position cup_position) : cup_name(a_cup_name)
 {
@@ -85,11 +85,10 @@ void Cup::publishStatus()
     // std::cout << "y" << diff_right_y << std::endl;
     // std::cout << "z" << diff_right_z << std::endl;
 
-
-    if(diff_right_z < 4)
+    if (diff_right_z < 4)
     {
-       world_transform.header.frame_id = "gripper_right";
-        cup_marker.header.frame_id = "gripper_right";
+      world_transform.header.frame_id = "gripper_right";
+      cup_marker.header.frame_id = "gripper_right";
 
       world_transform.transform.translation.z = tf_grippper_right_cup.getOrigin().z();
       cup_marker.pose.position.z = tf_grippper_right_cup.getOrigin().z();

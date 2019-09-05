@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(al5d_simulation)
 
-## Compile as C++11, supported in ROS Kinetic and newer
+## Compile as C++14, supported in ROS Kinetic and newer
 add_compile_options(-std=c++14)
 
 
@@ -41,26 +41,26 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 
 add_executable(
-  LynxMotionSimulator 
-  src/VirtualController.cpp 
-  src/VirtualServo.cpp
-  src/LynxMotionSimulator.cpp)
+  lynx_motion_simulator
+  src/virtual_controller.cpp 
+  src/virtual_servo.cpp
+  src/lynx_motion_simulator.cpp)
 
-add_dependencies(LynxMotionSimulator al5d_simulation_generate_messages_cpp)
-target_link_libraries(LynxMotionSimulator ${catkin_LIBRARIES})
+add_dependencies(lynx_motion_simulator al5d_simulation_generate_messages_cpp)
+target_link_libraries(lynx_motion_simulator ${catkin_LIBRARIES})
 
 
-add_executable(Publisher src/Publisher.cpp)
-add_dependencies(Publisher al5d_simulation_generate_messages_cpp)
-target_link_libraries(Publisher ${catkin_LIBRARIES})
+add_executable(publisher src/publisher.cpp)
+add_dependencies(publisher al5d_simulation_generate_messages_cpp)
+target_link_libraries(publisher ${catkin_LIBRARIES})
 
 
 add_executable(
-CupSimulator
-src/CupSimulator.cpp
-src/Cup.cpp)
-add_dependencies(CupSimulator al5d_simulation_generate_messages_cpp)
-target_link_libraries(CupSimulator ${catkin_LIBRARIES})
+cup_simulator
+src/cup_simulator.cpp
+src/cup.cpp)
+add_dependencies(cup_simulator al5d_simulation_generate_messages_cpp)
+target_link_libraries(cup_simulator ${catkin_LIBRARIES})
 
 include_directories(
 # include

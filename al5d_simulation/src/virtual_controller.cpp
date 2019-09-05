@@ -1,4 +1,4 @@
-#include "VirtualController.hpp"
+#include "virtual_controller.hpp"
 #include <thread>
 
 VirtualController::VirtualController(const Position& robot_arm_position) : command_character('\0')
@@ -146,7 +146,7 @@ void VirtualController::initServoList()
     servo_list.push_back(servo);
   }
 }
-
+// TODO: Implement publish message for the gripper.
 void VirtualController::publishMessage(const VirtualServo& servo)
 {
   // // check inbouwen
@@ -159,7 +159,7 @@ void VirtualController::publishMessage(const VirtualServo& servo)
 
   servo_degrees_msg.channel = found_servo->getChannel();
 
-  short degrees = found_servo->pwmToDegrees(); 
+  short degrees = found_servo->pwmToDegrees();
 
   while (degrees != found_servo->getCurrentDegrees())
   {

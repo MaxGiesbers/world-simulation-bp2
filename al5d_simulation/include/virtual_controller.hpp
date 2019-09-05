@@ -3,9 +3,9 @@
 #include "std_msgs/String.h"
 #include "al5d_simulation/servo_command.h"
 #include <vector>
-#include "VirtualServo.hpp"
+#include "virtual_servo.hpp"
 #include <algorithm>
-#include "LynxMotionSimulator.hpp"
+#include "lynx_motion_simulator.hpp"
 
 class VirtualController
 {
@@ -16,7 +16,7 @@ private:
   ros::Subscriber msg_subscriber;
   std::vector<VirtualServo> servo_list;
   al5d_simulation::servo_command servo_degrees_msg;
-  
+
   void parseMessage(const std_msgs::String& msg);
   void setFirstAndSecondCharPosition(const std::string& message, short& first_position, short& second_position);
   void initServoList();
