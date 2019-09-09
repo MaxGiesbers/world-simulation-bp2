@@ -23,9 +23,9 @@ Cup::Cup(std::string a_cup_name, Position cup_position) : cup_name(a_cup_name)
   cup_marker.pose.orientation = tf::createQuaternionMsgFromYaw(0);
 
   cup_marker.color.a = 1.0;  // Don't forget to set the alpha!
-  cup_marker.color.r = 0.0;
-  cup_marker.color.g = 1.0;
-  cup_marker.color.b = 0.0;
+  cup_marker.color.r = 255;
+  cup_marker.color.g = 255;
+  cup_marker.color.b = 255;
 
   //   //temporary
   cup_marker.pose.orientation.x = 0;
@@ -75,29 +75,93 @@ void Cup::publishStatus()
 
     // if (listener.canTransform("gripper_right", cup_name, ros::Time(0)))
     // {
-    listener.lookupTransform("gripper_left", cup_name, ros::Time(0), tf_grippper_right_cup);
+    listener.lookupTransform("gripper_left", cup_name, ros::Time(0), tf_grippper_left_cup);
+    listener.lookupTransform("gripper_right", cup_name, ros::Time(0), tf_grippper_right_cup);
 
     double diff_right_x = tf_grippper_right_cup.getOrigin().x() * 1000;
     double diff_right_y = tf_grippper_right_cup.getOrigin().y() * 1000;
     double diff_right_z = tf_grippper_right_cup.getOrigin().z() * 1000;
 
-    // std::cout << "x" <<  diff_right_x << std::endl;
-    // std::cout << "y" << diff_right_y << std::endl;
-    // std::cout << "z" << diff_right_z << std::endl;
+    double diff_left_x = tf_grippper_left_cup.getOrigin().x() * 1000;
+    double diff_left_y = tf_grippper_left_cup.getOrigin().y() * 1000;
+    double diff_left_z = tf_grippper_left_cup.getOrigin().z() * 1000;
 
-    if (diff_right_z < 4)
+    std::cout << "x right difference: " <<  diff_right_x << std::endl;
+    std::cout << "x left difference: " << diff_left_x << std::endl; 
+    std::cout << "left y:" << diff_left_y << std::endl;
+    std::cout << "right y: " << diff_right_y << std::endl;
+    //std::cout << "z" << diff_right_z << std::endl;
+
+
+
+    if (diff_right_y < 22.0 && diff_right_y > 20.5 
+        && diff_left_y < -19.5 && diff_left_y  > -20.5 
+        && diff_right_x < -9.0 && diff_right_x > -10.5 
+        && diff_left_x < -9.0 && diff_left_x > -10.0
+        && diff_left_z < 15.0 && diff_left_z > 14.0
+        && diff_right_z < 15.0 && diff_right_z > 14.0 )
     {
-      world_transform.header.frame_id = "gripper_right";
-      cup_marker.header.frame_id = "gripper_right";
-
-      world_transform.transform.translation.z = tf_grippper_right_cup.getOrigin().z();
-      cup_marker.pose.position.z = tf_grippper_right_cup.getOrigin().z();
+      cup_state = State::Grabbed;
     }
+
+    updateCupState(cup_state, tf_grippper_right_cup, tf_grippper_left_cup);
+
+    
+
+    // if (diff_right_z < 4)
+    // {
+    //   world_transform.header.frame_id = "gripper_right";
+    //   cup_marker.header.frame_id = "gripper_right";
+
+    //   world_transform.transform.translation.z = tf_grippper_right_cup.getOrigin().z();
+    //   cup_marker.pose.position.z = tf_grippper_right_cup.getOrigin().z();
+    // }
     // std::cout << "can transform?" << std::endl;
   }
   catch (tf::TransformException& ex)
   {
     ROS_ERROR("%s", ex.what());
     ros::Duration(1.0).sleep();
+  }
+}
+
+void Cup::updateCupState(State cup_state, tf::StampedTransform& tf_grippper_right_cup, tf::StampedTransform& tf_grippper_left_cup)
+{
+  switch(cup_state)
+  {
+    case State::Grabbed:
+    {
+      cup_marker.color.r = 0;
+      cup_marker.color.g = 255;
+      cup_marker.color.b = 0;
+      world_transform.header.frame_id = "gripper_right";
+      world_transform.transform.translation.x = tf_grippper_right_cup.getOrigin().x();
+      world_transform.transform.translation.y = tf_grippper_right_cup.getOrigin().y();
+      world_transform.transform.translation.z = tf_grippper_right_cup.getOrigin().z();
+      world_transform.transform.rotation.x = tf_grippper_right_cup.getRotation().x();
+      world_transform.transform.rotation.y = tf_grippper_right_cup.getRotation().y();
+      world_transform.transform.rotation.z = tf_grippper_right_cup.getRotation().z();
+      world_transform.transform.rotation.w = tf_grippper_right_cup.getRotation().w();
+
+      cup_marker.header.frame_id = "gripper_right";
+      cup_marker.pose.position.x = tf_grippper_right_cup.getOrigin().x();
+      cup_marker.pose.position.y = tf_grippper_right_cup.getOrigin().y();
+      cup_marker.pose.position.z = tf_grippper_right_cup.getOrigin().z();
+      cup_marker.pose.orientation.x = tf_grippper_right_cup.getRotation().x();
+      cup_marker.pose.orientation.y = tf_grippper_right_cup.getRotation().y();
+      cup_marker.pose.orientation.z = tf_grippper_right_cup.getRotation().z();
+      cup_marker.pose.orientation.w = tf_grippper_right_cup.getRotation().w();
+      std::cout << "Grapped" << std::endl;
+
+      break;
+    }
+    case State::Released:
+    {
+      break;
+    }
+    case State::Dropped:
+    {
+      break;
+    }
   }
 }

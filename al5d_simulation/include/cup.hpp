@@ -4,6 +4,13 @@
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
+enum class State
+{
+  Released,
+  Grabbed,
+  Dropped
+};
+
 class Cup
 {
 private:
@@ -16,6 +23,8 @@ private:
   tf::TransformBroadcaster broadcaster;
   tf::StampedTransform transform;
   tf::TransformListener listener;
+  State cup_state;
+  void updateCupState(State cup_state, tf::StampedTransform& tf_grippper_right_cup, tf::StampedTransform& tf_grippper_left_cup);
 
 public:
   Cup(std::string a_cup_name, Position cup_position);
@@ -23,3 +32,4 @@ public:
   void publishStatus();
   void simulate();
 };
+

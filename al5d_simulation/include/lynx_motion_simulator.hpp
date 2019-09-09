@@ -26,7 +26,7 @@ private:
   const double degree;
   Position robot_arm_position;
   std::mutex angle_mutex_;
-  short current_degrees;
+  double current_degrees;
   short current_channel;
 
   ros::NodeHandle n;

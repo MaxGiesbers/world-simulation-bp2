@@ -138,8 +138,8 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
 
 void VirtualController::initServoList()
 {
-  const short number_of_servos = 6;
-  for (size_t i = 0; i < 6; i++)
+  const short NUMBER_OF_SERVOS = 6;
+  for (size_t i = 0; i < NUMBER_OF_SERVOS; i++)
   {
     VirtualServo servo;
     servo.setChannel(i);
@@ -156,43 +156,70 @@ void VirtualController::publishMessage(const VirtualServo& servo)
   // add speed and time
   found_servo->setChannel(servo.getChannel());
   found_servo->setIncomingPwm(servo.getIncomingPWM());
-
   servo_degrees_msg.channel = found_servo->getChannel();
 
-  short degrees = found_servo->pwmToDegrees();
+  double degrees = 0;
 
-  while (degrees != found_servo->getCurrentDegrees())
+  if (servo.getChannel() == 5 || servo.getChannel() == 6)
   {
-    short current_degrees = found_servo->getCurrentDegrees();
+    degrees = found_servo->mapGripper();
+  }
+  else 
+  {
+    degrees = found_servo->pwmToDegrees();
+  }
 
+  while (!doubleEquals(degrees, found_servo->getCurrentDegrees()))
+  {
+    double current_degrees = found_servo->getCurrentDegrees();
     if (servo.getChannel() == 5 || servo.getChannel() == 6)
     {
-      if (current_degrees < degrees)
-      {
-        current_degrees++;
-      }
-      else if (current_degrees > degrees)
-      {
-        current_degrees--;
-      }
+      updateGripperPosition(current_degrees, degrees);
     }
     else
     {
-      if (current_degrees < degrees)
-      {
-        current_degrees++;
-      }
-      else if (current_degrees > degrees)
-      {
-        current_degrees--;
-      }
+      updateServoPositions(current_degrees, degrees);
     }
-    std::cout << current_degrees << std::endl;
+
     found_servo->setCurrentDegrees(current_degrees);
     servo_degrees_msg.degrees = current_degrees;
     servo_degrees_publisher.publish(servo_degrees_msg);
+    
   }
 }
+
+
+bool VirtualController::doubleEquals(double a, double b)
+{
+  const double EPSILON = 0.1;
+  return std::abs(a - b) < EPSILON;
+}
+
+void VirtualController::updateServoPositions(double& current_degrees, double degrees)
+{
+  if (current_degrees < degrees)
+  {
+    current_degrees++;
+  }
+  else if (current_degrees > degrees)
+  {
+    current_degrees--;
+  }
+}
+//kan geen double getallen opsturen... mss ergens nog een short staan.
+void VirtualController::updateGripperPosition(double& current_degrees, double degrees)
+{
+  if (current_degrees < degrees)
+  {
+    current_degrees = current_degrees + 0.01;
+  }
+  else if (current_degrees > degrees)
+  {
+    current_degrees = current_degrees - 0.01;
+  }
+}
+
+
 
 void runRobotArmSimulation(Position robot_arm_position)
 {
@@ -206,6 +233,7 @@ void runRobotArmSimulation(Position robot_arm_position)
   }
 }
 
+
 int main(int argc, char** argv)
 {
   if (argc != 6)
@@ -213,6 +241,14 @@ int main(int argc, char** argv)
     ROS_ERROR("Not enough arguments are given , %d given", argc);
     return 1;
   }
+
+  std::cout << argv[0] << std::endl;
+  std::cout << argv[1] << std::endl;
+  std::cout << argv[2] << std::endl;
+  std::cout << argv[3] << std::endl;
+  std::cout << argv[4] << std::endl;
+  std::cout << argv[5] << std::endl;
+
 
   // initialize position robotarm
   Position robot_arm_position;

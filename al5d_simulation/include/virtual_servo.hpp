@@ -12,19 +12,20 @@ public:
 
   void setChannel(short a_channel);
   void setIncomingPwm(const short a_incoming_pwm);
-  void setCurrentDegrees(const short a_current_degrees);
+  void setCurrentDegrees(const double a_current_degrees);
   void setMovementSpeed(const short a_movement_speed);
   void setTime(const short a_time);
 
   short getChannel() const;
-  short getCurrentDegrees() const;
+  double getCurrentDegrees() const;
   short getIncomingPWM() const;
-  short pwmToDegrees();
+  double pwmToDegrees();
+  double mapGripper();
 
 private:
   short channel;
   short incoming_pwm;
   short movement_speed;
   short time;
-  short current_degrees;
+  double current_degrees;
 };

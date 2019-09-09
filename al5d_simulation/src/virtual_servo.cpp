@@ -43,17 +43,17 @@ short VirtualServo::getChannel() const
   return channel;
 }
 
-void VirtualServo::setCurrentDegrees(const short a_current_degrees)
+void VirtualServo::setCurrentDegrees(const double a_current_degrees)
 {
   current_degrees = a_current_degrees;
 }
 
-short VirtualServo::getCurrentDegrees() const
+double VirtualServo::getCurrentDegrees() const
 {
   return current_degrees;
 }
 
-short VirtualServo::pwmToDegrees()
+double VirtualServo::pwmToDegrees()
 {
   const short max_pwm = 2500;
   const short min_degrees = -90;
@@ -61,6 +61,18 @@ short VirtualServo::pwmToDegrees()
   const short min_pwm = 500;
 
   return (short)(((long double)(max_degrees - min_degrees) / (long double)(max_pwm - min_pwm)) *
+                 (incoming_pwm - min_pwm)) +
+         min_degrees;
+}
+
+double VirtualServo::mapGripper()
+{
+  const short max_pwm = 2500;
+  const double min_degrees = 0.0;
+  const double max_degrees = 0.95;
+  const short min_pwm = 500;
+
+  return (double)(((long double)(max_degrees - min_degrees) / (long double)(max_pwm - min_pwm)) *
                  (incoming_pwm - min_pwm)) +
          min_degrees;
 }

@@ -30,6 +30,8 @@ void LynxMotionSimulator::initializeJoints()
   {
     joint_state.position[i] = 0;
   }
+
+  //publishStatesOfJoints();
 }
 
 void LynxMotionSimulator::publishStatesOfJoints()
@@ -52,6 +54,9 @@ void LynxMotionSimulator::callBack(const al5d_simulation::servo_command& servo_d
   joint_state.header.stamp = ros::Time::now();
   current_degrees = servo_degrees.degrees;
   current_channel = servo_degrees.channel;
+
+
+  //std::cout << current_degrees * M_PI / 180.0 << std::endl;
 
   // set received channel en position in radians
   joint_state.position[current_channel] = current_degrees * M_PI / 180.0;

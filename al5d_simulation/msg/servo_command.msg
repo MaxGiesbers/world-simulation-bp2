@@ -1,2 +1,2 @@
 uint8 channel
-uint32 degrees
+float64 degrees

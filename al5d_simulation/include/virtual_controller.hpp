@@ -22,6 +22,11 @@ private:
   void initServoList();
   short getFirstIndexPosition(const std::string& message);
   void publishMessage(const VirtualServo& servo);
+  void updateServoPositions(double& current_degrees, double degrees); 
+  void updateGripperPosition(double& current_degrees, double degrees);
+  bool doubleEquals(double a, double b);
+  void mapGripper();
+
 
 public:
   VirtualController(const Position& robot_arm_position);

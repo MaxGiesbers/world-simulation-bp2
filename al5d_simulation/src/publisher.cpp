@@ -7,8 +7,7 @@
 int main(int argc, char** argv)
 {
   std::ifstream myfile(argv[1]);
-
-  if (argc != 2)
+  if (argc != 2)  
   {
     ROS_ERROR("Not enough arguments are given, %d given", argc);
     return 1;
@@ -29,16 +28,19 @@ int main(int argc, char** argv)
   std::string line = "";
   if (myfile.is_open())
   {
-    while (myfile.good())
+    while ((myfile.good()) && !(myfile.peek() == std::ifstream::traits_type::eof()))
     {
       // Check for subscribers
       if (msg_publisher.getNumSubscribers() > 0)
       {
         getline(myfile, line);
-        commandMsg.data = line;
-        commandMsg.data += '\r';
-        ROS_INFO("Sending to the controller command: %s ", commandMsg.data.c_str());
-        msg_publisher.publish(commandMsg);
+        if (!line.empty())
+        {
+          commandMsg.data = line;
+          commandMsg.data += '\r';
+          ROS_INFO("Sending to the controller command: %s ", commandMsg.data.c_str());
+          msg_publisher.publish(commandMsg);
+        }
       }
       ros::spinOnce();
       loop_rate.sleep();
