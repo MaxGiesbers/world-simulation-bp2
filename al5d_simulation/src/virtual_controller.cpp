@@ -211,11 +211,11 @@ void VirtualController::updateGripperPosition(double& current_degrees, double de
 {
   if (current_degrees < degrees)
   {
-    current_degrees = current_degrees + 0.01;
+    current_degrees = current_degrees + 0.005;
   }
   else if (current_degrees > degrees)
   {
-    current_degrees = current_degrees - 0.01;
+    current_degrees = current_degrees - 0.005;
   }
 }
 
