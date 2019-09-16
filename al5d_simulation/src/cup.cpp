@@ -49,7 +49,7 @@ Cup::~Cup()
 
 void Cup::simulate()
 {
-  ros::Rate loop_rate(10);
+  ros::Rate loop_rate(20);
   while (ros::ok())
   {
     world_transform.header.stamp = ros::Time::now();

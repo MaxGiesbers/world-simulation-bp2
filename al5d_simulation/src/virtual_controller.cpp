@@ -3,9 +3,8 @@
 
 VirtualController::VirtualController(const Position& robot_arm_position) : command_character('\0')
 {
-  initServoList();
   msg_subscriber = n.subscribe("msgPublisher", 1000, &VirtualController::parseMessage, this);
-  servo_degrees_publisher = n.advertise<al5d_simulation::servo_command>("servo_degrees", 1000);
+  servo_publisher = n.advertise<al5d_simulation::servo_command>("servo_command", 1000);
 }
 
 VirtualController::~VirtualController()
@@ -79,7 +78,8 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
   bool end_line = false;
   bool send_command = false;
 
-  VirtualServo current_servo;
+
+  //VirtualServo current_servo;
 
   while (!end_line)
   {
@@ -94,11 +94,12 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
       {
         if (send_command)
         {
-          publishMessage(current_servo);
+          //??????
+          servo_publisher.publish(servo_degrees_msg);
           send_command = false;
         }
         std::cout << "# " << command << std::endl;
-        current_servo.setChannel(stoi(command));
+        servo_degrees_msg.channel = stoi(command);
         send_command = true;
 
         break;
@@ -107,27 +108,28 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
       case 'P':
       {
         std::cout << "P " << command << std::endl;
-        current_servo.setIncomingPwm(stoi(command));
+        servo_degrees_msg.pwm = stoi(command);
+        //current_servo.setIncomingPwm(stoi(command));
         break;
       }
 
       case 'S':
       {
         std::cout << "S " << command << std::endl;
-        current_servo.setMovementSpeed(stoi(command));
+        servo_degrees_msg.speed = stoi(command);
         break;
       }
 
       case 'T':
       {
         std::cout << "T " << command << std::endl;
-        current_servo.setTime(stoi(command));
+        servo_degrees_msg.time = stoi(command);
         break;
       }
       case '\r':
       {
         // publih
-        publishMessage(current_servo);
+        servo_publisher.publish(servo_degrees_msg);
         std::cout << "publish /r " << std::endl;
         end_line = true;
         break;
@@ -135,91 +137,6 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
     }
   }
 }
-
-void VirtualController::initServoList()
-{
-  const short NUMBER_OF_SERVOS = 6;
-  for (size_t i = 0; i < NUMBER_OF_SERVOS; i++)
-  {
-    VirtualServo servo;
-    servo.setChannel(i);
-    servo_list.push_back(servo);
-  }
-}
-// TODO: Implement publish message for the gripper.
-void VirtualController::publishMessage(const VirtualServo& servo)
-{
-  // // check inbouwen
-  auto found_servo = find_if(servo_list.begin(), servo_list.end(),
-                             [servo](VirtualServo& s) { return s.getChannel() == servo.getChannel(); });
-
-  // add speed and time
-  found_servo->setChannel(servo.getChannel());
-  found_servo->setIncomingPwm(servo.getIncomingPWM());
-  servo_degrees_msg.channel = found_servo->getChannel();
-
-  double degrees = 0;
-
-  if (servo.getChannel() == 5 || servo.getChannel() == 6)
-  {
-    degrees = found_servo->mapGripper();
-  }
-  else 
-  {
-    degrees = found_servo->pwmToDegrees();
-  }
-
-  while (!doubleEquals(degrees, found_servo->getCurrentDegrees()))
-  {
-    double current_degrees = found_servo->getCurrentDegrees();
-    if (servo.getChannel() == 5 || servo.getChannel() == 6)
-    {
-      updateGripperPosition(current_degrees, degrees);
-    }
-    else
-    {
-      updateServoPositions(current_degrees, degrees);
-    }
-
-    found_servo->setCurrentDegrees(current_degrees);
-    servo_degrees_msg.degrees = current_degrees;
-    servo_degrees_publisher.publish(servo_degrees_msg);
-    
-  }
-}
-
-
-bool VirtualController::doubleEquals(double a, double b)
-{
-  const double EPSILON = 0.1;
-  return std::abs(a - b) < EPSILON;
-}
-
-void VirtualController::updateServoPositions(double& current_degrees, double degrees)
-{
-  if (current_degrees < degrees)
-  {
-    current_degrees++;
-  }
-  else if (current_degrees > degrees)
-  {
-    current_degrees--;
-  }
-}
-//kan geen double getallen opsturen... mss ergens nog een short staan.
-void VirtualController::updateGripperPosition(double& current_degrees, double degrees)
-{
-  if (current_degrees < degrees)
-  {
-    current_degrees = current_degrees + 0.005;
-  }
-  else if (current_degrees > degrees)
-  {
-    current_degrees = current_degrees - 0.005;
-  }
-}
-
-
 
 void runRobotArmSimulation(Position robot_arm_position)
 {
@@ -233,7 +150,6 @@ void runRobotArmSimulation(Position robot_arm_position)
   }
 }
 
-
 int main(int argc, char** argv)
 {
   if (argc != 6)
@@ -241,15 +157,7 @@ int main(int argc, char** argv)
     ROS_ERROR("Not enough arguments are given , %d given", argc);
     return 1;
   }
-
-  std::cout << argv[0] << std::endl;
-  std::cout << argv[1] << std::endl;
-  std::cout << argv[2] << std::endl;
-  std::cout << argv[3] << std::endl;
-  std::cout << argv[4] << std::endl;
-  std::cout << argv[5] << std::endl;
-
-
+  
   // initialize position robotarm
   Position robot_arm_position;
   robot_arm_position.x_pos = atof(argv[1]);

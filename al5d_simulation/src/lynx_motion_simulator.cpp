@@ -4,7 +4,7 @@ LynxMotionSimulator::LynxMotionSimulator(const Position& a_robot_arm_position)
   : degree(M_PI / 180), robot_arm_position(a_robot_arm_position), current_degrees(0), current_channel(0)
 {
   initializeJoints();
-  servo_subscriber = n.subscribe("servo_degrees", 1000, &LynxMotionSimulator::callBack, this);
+  servo_subscriber = n.subscribe("servo_position", 1000, &LynxMotionSimulator::callBack, this);
   joint_publisher = n.advertise<sensor_msgs::JointState>("joint_states", 1);
 }
 
@@ -48,15 +48,12 @@ LynxMotionSimulator::~LynxMotionSimulator()
 {
 }
 
-void LynxMotionSimulator::callBack(const al5d_simulation::servo_command& servo_degrees)
+void LynxMotionSimulator::callBack(const al5d_simulation::servo_position& servo_position)
 {
   std::lock_guard<std::mutex> guard(angle_mutex_);
   joint_state.header.stamp = ros::Time::now();
-  current_degrees = servo_degrees.degrees;
-  current_channel = servo_degrees.channel;
-
-
-  //std::cout << current_degrees * M_PI / 180.0 << std::endl;
+  current_degrees = servo_position.degrees;
+  current_channel = servo_position.channel;
 
   // set received channel en position in radians
   joint_state.position[current_channel] = current_degrees * M_PI / 180.0;

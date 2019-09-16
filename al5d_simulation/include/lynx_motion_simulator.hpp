@@ -2,7 +2,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
 #include <tf/transform_broadcaster.h>
-#include "al5d_simulation/servo_command.h"
+#include "al5d_simulation/servo_position.h"
 #include "position.hpp"
 
 #include <thread>
@@ -13,7 +13,7 @@ class LynxMotionSimulator
 public:
   LynxMotionSimulator(const Position& a_robot_arm_position);
   ~LynxMotionSimulator();
-  void callBack(const al5d_simulation::servo_command& servo_degrees);
+  void callBack(const al5d_simulation::servo_position& servo_position);
   void publishStatesOfJoints();
   ros::Subscriber servo_subscriber;
   ros::Publisher joint_publisher;

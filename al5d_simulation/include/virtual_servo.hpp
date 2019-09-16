@@ -1,31 +1,33 @@
 #include "ros/ros.h"
-#include <chrono>
 #include <thread>
+#include "std_msgs/String.h"
+#include "al5d_simulation/servo_position.h"
+#include "al5d_simulation/servo_command.h"
+
+
 using namespace std::chrono_literals;
 
 class VirtualServo
 {
 public:
-  VirtualServo();
+  VirtualServo(short a_channel);
   ~VirtualServo();
-  VirtualServo(const VirtualServo& a_servo);
-
-  void setChannel(short a_channel);
-  void setIncomingPwm(const short a_incoming_pwm);
-  void setCurrentDegrees(const double a_current_degrees);
-  void setMovementSpeed(const short a_movement_speed);
-  void setTime(const short a_time);
-
-  short getChannel() const;
-  double getCurrentDegrees() const;
-  short getIncomingPWM() const;
-  double pwmToDegrees();
-  double mapGripper();
-
+  void callBack(const al5d_simulation::servo_command& servo);
+  ros::Publisher servo_degrees_publisher;
+  
 private:
+  double pwmToDegrees(short incoming_pwm);
+  double mapGripper(short incoming_pwm);
+  bool doubleEquals(double a, double b);
+  void updateGripperPosition(double& current_degrees, double degrees);
+  void updateServoPositions(double& current_degrees, double degrees);
+  void publishMessage(const al5d_simulation::servo_command& servo);
   short channel;
-  short incoming_pwm;
   short movement_speed;
   short time;
   double current_degrees;
+  ros::NodeHandle n;
+  ros::Subscriber msg_subscriber;
+  al5d_simulation::servo_position servo_position_msg;
+
 };
