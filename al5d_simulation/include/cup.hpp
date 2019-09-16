@@ -8,29 +8,32 @@ enum class State
 {
   Released,
   Grabbed,
-  Dropped
+  Dropping
 };
 
 class Cup
 {
 private:
-  ros::Publisher cup_publisher;
-  std::string cup_name;
-  ros::NodeHandle n;
-  Position cup_position;
+  ros::Publisher m_publisher;
+  std::string m_cup_name;
+  ros::NodeHandle m_node_handle;
+  Position m_cup_position;
 
-  visualization_msgs::Marker cup_marker;
-  geometry_msgs::TransformStamped world_transform;
-  tf::TransformBroadcaster broadcaster;
-  tf::StampedTransform transform;
-  tf::TransformListener listener;
-  State cup_state;
-  bool grapped;
-  void updateCupState(State cup_state, tf::StampedTransform& tf_grippper_right_cup, tf::StampedTransform& tf_grippper_left_cup, tf::StampedTransform& tf_world_cup);
+  visualization_msgs::Marker m_cup_marker;
+  geometry_msgs::TransformStamped m_world_transform;
+  tf::TransformBroadcaster m_broadcaster;
+  tf::StampedTransform m_transform;
+  tf::TransformListener m_listener;
+  State m_cup_state;
+  void updateCupPosition(tf::StampedTransform& tf_grippper_right_cup, tf::StampedTransform& tf_grippper_left_cup, tf::StampedTransform& tf_world_cup);
+  void publishCupStatus();
+  void updateCupColor();
+  void initializeCup();
+  void initializeRosWorld();
+  bool cupGrapped(const tf::StampedTransform& tf_grippper_right_cup, const tf::StampedTransform& tf_grippper_left_cup);
 
 public:
-  Cup(std::string a_cup_name, Position a_cup_position);
+  Cup(std::string cup_name, Position cup_position);
   ~Cup();
-  void publishStatus();
   void simulate();
 };

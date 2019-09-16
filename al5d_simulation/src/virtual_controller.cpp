@@ -4,7 +4,7 @@
 namespace
 {
   const uint8_t MINIMAL_ARGUMENTS = 6;
-  const uint8_t ROS_LOOP_RATE = 10;
+  const uint8_t ROS_LOOP_RATE = 20;
   const uint16_t QUEUE_SIZE = 1000; 
 }
 
