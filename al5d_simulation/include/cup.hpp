@@ -34,4 +34,3 @@ public:
   void publishStatus();
   void simulate();
 };
-

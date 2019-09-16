@@ -1,33 +1,27 @@
 #include "ros/ros.h"
-#include <thread>
-#include "std_msgs/String.h"
 #include "al5d_simulation/servo_position.h"
 #include "al5d_simulation/servo_command.h"
 
-
-using namespace std::chrono_literals;
-
 class VirtualServo
 {
-public:
-  VirtualServo(short a_channel);
-  ~VirtualServo();
-  void callBack(const al5d_simulation::servo_command& servo);
-  ros::Publisher servo_degrees_publisher;
-  
 private:
-  double pwmToDegrees(short incoming_pwm);
-  double mapGripper(short incoming_pwm);
-  bool doubleEquals(double a, double b);
-  void updateGripperPosition(double& current_degrees, double degrees);
-  void updateServoPositions(double& current_degrees, double degrees);
-  void publishMessage(const al5d_simulation::servo_command& servo);
-  short channel;
-  short movement_speed;
-  short time;
-  double current_degrees;
-  ros::NodeHandle n;
-  ros::Subscriber msg_subscriber;
-  al5d_simulation::servo_position servo_position_msg;
+  uint8_t m_channel;
+  uint16_t m_movement_speed;
+  uint16_t m_time;
+  double m_current_degrees;
+  ros::Publisher m_publisher;
+  ros::NodeHandle m_node_handle;
+  ros::Subscriber m_subscriber;
+  al5d_simulation::servo_position m_servo_message;
 
+  void callBack(const al5d_simulation::servo_command& servo);
+  void updateServoPosition(double incoming_degrees, double movement_speed);
+  void publishMessage(const al5d_simulation::servo_command& servo);
+  double mapGripper(uint16_t incoming_pwm);
+  double mapServo(uint16_t incoming_pwm);
+  bool almostEquals(double a, double b);
+
+public:
+  VirtualServo(uint8_t channel);
+  ~VirtualServo();
 };

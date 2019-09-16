@@ -1,11 +1,23 @@
 #include "virtual_servo.hpp"
-#include <chrono>
 #include <thread>
 
-VirtualServo::VirtualServo(short a_channel) : channel(a_channel), movement_speed(0), time(0), current_degrees(0)
+namespace
 {
-  servo_degrees_publisher = n.advertise<al5d_simulation::servo_position>("servo_position", 1000);
-  msg_subscriber = n.subscribe("servo_command", 1000, &VirtualServo::publishMessage, this);  
+  const uint8_t GRIPPER_LEFT = 5;
+  const uint8_t GRIPPER_RIGHT = 6;
+  const uint8_t MINIMAL_ARGUMENTS = 4;
+  const uint16_t MAX_PWM = 2500;
+  const uint16_t MIN_PWM = 500;
+  const uint16_t THREAD_SLEEP_DURATION = 10;
+  const uint16_t SERVO_MOVEMENT_SPEED = 1;
+  const double GRIPPER_MOVEMENT_SPEED = 0.01;
+  const double EPSILON = 0.1; 
+}
+
+VirtualServo::VirtualServo(uint8_t channel) : m_channel(channel), m_movement_speed(0), m_time(0), m_current_degrees(0)
+{
+  m_publisher = m_node_handle.advertise<al5d_simulation::servo_position>("servo_position", 1000);
+  m_subscriber = m_node_handle.subscribe("servo_command", 1000, &VirtualServo::publishMessage, this);  
 }
 
 VirtualServo::~VirtualServo()
@@ -14,105 +26,83 @@ VirtualServo::~VirtualServo()
 
 void VirtualServo::publishMessage(const al5d_simulation::servo_command& servo)
 {
-  double degrees = 0;
+  double incoming_degrees = 0;
 
-  servo_position_msg.channel = servo.channel;
+  m_servo_message.channel = servo.channel;
 
-  if (channel == servo.channel)
+  if (m_channel == servo.channel)
   {
-   
-
-    if (servo.channel == 5 || servo.channel == 6)
+    if (servo.channel == GRIPPER_LEFT || servo.channel == GRIPPER_RIGHT)
     {
-      degrees = mapGripper(servo.pwm);
+      incoming_degrees = mapGripper(servo.pwm);
     }
     else 
     {
-      degrees = pwmToDegrees(servo.pwm);
+      incoming_degrees = mapServo(servo.pwm);
     }
   
-    while (!doubleEquals(degrees, current_degrees))
+    while (!almostEquals(incoming_degrees, m_current_degrees))
     {
-      if (channel == 5 || channel == 6)
+      if (m_channel == GRIPPER_LEFT || m_channel == GRIPPER_RIGHT)
       {
-        updateGripperPosition(current_degrees, degrees);
+        updateServoPosition(incoming_degrees, GRIPPER_MOVEMENT_SPEED);
       }
       else
       {
-        updateServoPositions(current_degrees, degrees);
+        updateServoPosition(incoming_degrees, SERVO_MOVEMENT_SPEED);
       }
 
-      servo_position_msg.degrees = current_degrees;
-      servo_degrees_publisher.publish(servo_position_msg);
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      m_servo_message.degrees = m_current_degrees;
+      m_publisher.publish(m_servo_message);
+      std::this_thread::sleep_for(std::chrono::milliseconds(THREAD_SLEEP_DURATION));
     }
   }
 }
 
-
-bool VirtualServo::doubleEquals(double a, double b)
+bool VirtualServo::almostEquals(double a, double b)
 {
-  const double EPSILON = 0.1;
   return std::abs(a - b) < EPSILON;
 }
 
-void VirtualServo::updateServoPositions(double& current_degrees, double degrees)
+void VirtualServo::updateServoPosition(double incoming_degrees, double movement_speed)
 {
-  if (current_degrees < degrees)
+  if (m_current_degrees < incoming_degrees)
   {
-    current_degrees++;
+    m_current_degrees = m_current_degrees + movement_speed;
   }
-  else if (current_degrees > degrees)
+  else if (m_current_degrees > incoming_degrees)
   {
-    current_degrees--;
-  }
-}
-
-void VirtualServo::updateGripperPosition(double& current_degrees, double degrees)
-{
-  if (current_degrees < degrees)
-  {
-    current_degrees = current_degrees + 0.01;
-  }
-  else if (current_degrees > degrees)
-  {
-    current_degrees = current_degrees - 0.01;
+    m_current_degrees = m_current_degrees - movement_speed;
   }
 }
 
-double VirtualServo::pwmToDegrees(short incoming_pwm)
+double VirtualServo::mapServo(uint16_t incoming_pwm)
 {
-  const short max_pwm = 2500;
-  const short min_degrees = -90;
-  const short max_degrees = 90;
-  const short min_pwm = 500;
+  const int16_t MIN_DEGREES = -90;
+  const int16_t MAX_DEGREES = 90;
 
-  return (short)(((long double)(max_degrees - min_degrees) / (long double)(max_pwm - min_pwm)) *
-                 (incoming_pwm - min_pwm)) +
-         min_degrees;
+  return (((double)(MAX_DEGREES - MIN_DEGREES) / (double)(MAX_PWM - MIN_PWM)) *
+                 (incoming_pwm - MIN_PWM)) + MIN_DEGREES;
 }
 
-double VirtualServo::mapGripper(short incoming_pwm)
+double VirtualServo::mapGripper(uint16_t incoming_pwm)
 {
-  const short max_pwm = 2500;
-  const double min_degrees = 0.0;
-  const double max_degrees = 0.95;
-  const short min_pwm = 500;
+  const double MIN_DEGREES = 0.0;
+  const double MAX_DEGREES = 0.95;
 
-  return (double)(((long double)(max_degrees - min_degrees) / (long double)(max_pwm - min_pwm)) *
-                 (incoming_pwm - min_pwm)) +
-         min_degrees;
+  return (((double)(MAX_DEGREES - MIN_DEGREES) / (double)(MAX_PWM - MIN_PWM)) *
+                 (incoming_pwm - MIN_PWM)) + MIN_DEGREES;
 }
 
 int main(int argc, char** argv)
 {
-  if (argc != 4)
+  if (argc != MINIMAL_ARGUMENTS)
   {
     ROS_ERROR("Not enough arguments are given , %d given", argc);
     return 1;
   }
-  ros::init(argc, argv, "VirtualController" /*"Virtual servo" + std::stoi(argv[1])*/);
-  
+
+  ros::init(argc, argv, "Virtual Servo"  + std::stoi(argv[1]));
   VirtualServo servo(std::stoi(argv[1]));
   ros::spin();
 }

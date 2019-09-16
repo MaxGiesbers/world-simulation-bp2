@@ -1,10 +1,17 @@
 #include "virtual_controller.hpp"
 #include <thread>
 
-VirtualController::VirtualController(const Position& robot_arm_position) : command_character('\0')
+namespace
 {
-  msg_subscriber = n.subscribe("msgPublisher", 1000, &VirtualController::parseMessage, this);
-  servo_publisher = n.advertise<al5d_simulation::servo_command>("servo_command", 1000);
+  const uint8_t MINIMAL_ARGUMENTS = 6;
+  const uint8_t ROS_LOOP_RATE = 10;
+  const uint16_t QUEUE_SIZE = 1000; 
+}
+
+VirtualController::VirtualController(const Position& robot_arm_position) : m_command_character('\0')
+{
+  m_subscriber = m_node_handle.subscribe("msgPublisher", QUEUE_SIZE, &VirtualController::parseMessage, this);
+  m_publisher = m_node_handle.advertise<al5d_simulation::servo_command>("servo_command", QUEUE_SIZE);
 }
 
 VirtualController::~VirtualController()
@@ -18,7 +25,7 @@ short VirtualController::getFirstIndexPosition(const std::string& message)
   {
     char_position = message.find(delimeter);
 
-    if (char_position != std::string::npos && command_character != delimeter)
+    if (char_position != std::string::npos && m_command_character != delimeter)
     {
       break;
     }
@@ -26,20 +33,20 @@ short VirtualController::getFirstIndexPosition(const std::string& message)
   return char_position;
 }
 
-void VirtualController::setFirstAndSecondCharPosition(const std::string& message, short& first_position,
-                                                      short& second_position)
+void VirtualController::setFirstAndSecondCharPosition(const std::string& message, uint8_t& first_position,
+                                                      uint8_t& second_position)
 {
   // reset command character
-  command_character = '\0';
+  m_command_character = '\0';
 
   first_position = getFirstIndexPosition(message);
-  const std::size_t numberOfLoops = 2;
+  const std::size_t NUMBER_OF_LOOPS = 2;
 
-  for (int i = 0; i < numberOfLoops; i++)
+  for (int i = 0; i < NUMBER_OF_LOOPS; i++)
   {
-    for (const char delimeter : delimeters)
+    for (const uint8_t delimeter : delimeters)
     {
-      char tempPosition = message.find(delimeter);
+      uint8_t tempPosition = message.find(delimeter);
 
       if (tempPosition != std::string::npos)
       {
@@ -49,37 +56,34 @@ void VirtualController::setFirstAndSecondCharPosition(const std::string& message
           first_position = tempPosition;
         }
         // Finds the lowest position of the second character that is not the same as the first one.
-        if (tempPosition < second_position && command_character != delimeter && command_character != '\0')
+        if (tempPosition < second_position && m_command_character != delimeter && m_command_character != '\0')
         {
           second_position = tempPosition;
         }
       }
     }
     // Breaks out of the function for keeping the second position
-    if (command_character != '\0')
+    if (m_command_character != '\0')
     {
       break;
     }
-    command_character = message.at(first_position);
+    m_command_character = message.at(first_position);
     second_position = getFirstIndexPosition(message);
   }
 }
 
-void VirtualController::parseMessage(const std_msgs::String& msg)
+void VirtualController::parseMessage(const std_msgs::String& incoming_message)
 {
-  std::string message = msg.data.c_str();
+  std::string message = incoming_message.data.c_str();
   remove_if(message.begin(), message.end(), isspace);
 
-  short first_position = 0;
-  short second_position = 0;
+  uint8_t first_position = 0;
+  uint8_t second_position = 0;
 
   std::string command = "";
 
   bool end_line = false;
   bool send_command = false;
-
-
-  //VirtualServo current_servo;
 
   while (!end_line)
   {
@@ -88,49 +92,40 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
     command = message.substr(first_position + 1, second_position - 1);
     message.erase(first_position, second_position);
 
-    switch (command_character)
+    switch (m_command_character)
     {
       case '#':
       {
         if (send_command)
         {
-          //??????
-          servo_publisher.publish(servo_degrees_msg);
           send_command = false;
         }
-        std::cout << "# " << command << std::endl;
-        servo_degrees_msg.channel = stoi(command);
+        m_servo_message.channel = stoi(command);
         send_command = true;
-
         break;
       }
 
       case 'P':
       {
-        std::cout << "P " << command << std::endl;
-        servo_degrees_msg.pwm = stoi(command);
-        //current_servo.setIncomingPwm(stoi(command));
+        m_servo_message.pwm = stoi(command);
         break;
       }
 
       case 'S':
       {
-        std::cout << "S " << command << std::endl;
-        servo_degrees_msg.speed = stoi(command);
+        m_servo_message.speed = stoi(command);
         break;
       }
 
       case 'T':
       {
-        std::cout << "T " << command << std::endl;
-        servo_degrees_msg.time = stoi(command);
+        m_servo_message.time = stoi(command);
         break;
       }
       case '\r':
       {
-        // publih
-        servo_publisher.publish(servo_degrees_msg);
-        std::cout << "publish /r " << std::endl;
+        ROS_INFO_STREAM("Publish Message #" << (int) m_servo_message.channel << "P" << m_servo_message.pwm << "S" << m_servo_message.speed  << "T" << m_servo_message.time);
+        m_publisher.publish(m_servo_message);
         end_line = true;
         break;
       }
@@ -141,7 +136,7 @@ void VirtualController::parseMessage(const std_msgs::String& msg)
 void runRobotArmSimulation(Position robot_arm_position)
 {
   LynxMotionSimulator simulator(robot_arm_position);
-  ros::Rate rate(10);
+  ros::Rate rate(ROS_LOOP_RATE);
 
   while (ros::ok())
   {
@@ -152,7 +147,7 @@ void runRobotArmSimulation(Position robot_arm_position)
 
 int main(int argc, char** argv)
 {
-  if (argc != 6)
+  if (argc != MINIMAL_ARGUMENTS)
   {
     ROS_ERROR("Not enough arguments are given , %d given", argc);
     return 1;
@@ -165,7 +160,6 @@ int main(int argc, char** argv)
   robot_arm_position.z_pos = atof(argv[3]);
 
   ros::init(argc, argv, "VirtualController");
-  ros::NodeHandle n;
   std::thread robot_arm_simulation(runRobotArmSimulation, robot_arm_position);
   VirtualController p(robot_arm_position);
 
