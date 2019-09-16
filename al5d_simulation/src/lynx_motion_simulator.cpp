@@ -3,7 +3,7 @@
 
 namespace 
 {
-  const uint8_t THREAD_SLEEP_DURATION = 30;
+  const uint8_t THREAD_SLEEP_DURATION = 15;
   const uint16_t QUEUE_SIZE = 1000; 
   const double DEGREES = M_PI / 180;
   const uint8_t ARRAY_SIZE = 7;

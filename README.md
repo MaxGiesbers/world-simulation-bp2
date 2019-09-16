@@ -1,7 +1,7 @@
 # world-simulation-bp2
 
 Start simulatie commando:
-roslaunch al5d_simulation display.launch 
+roslaunch al5d_simulation startup.launch 
 
 Bug geen robot commando: 
 

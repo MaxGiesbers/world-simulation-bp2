@@ -1,9 +1,14 @@
 #include <tf/transform_listener.h>
 #include "cup.hpp"
 
+namespace
+{
+  const uint8_t MINIMAL_ARGUMENTS = 7;
+}
+
 int main(int argc, char** argv)
 {
-  if (argc != 7)
+  if (argc != MINIMAL_ARGUMENTS)
   {
     ROS_ERROR("Not enough arguments are given, %d given", argc);
     return 1;

@@ -4,8 +4,6 @@ project(al5d_simulation)
 ## Compile as C++14, supported in ROS Kinetic and newer
 add_compile_options(-std=c++14)
 
-
-
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
@@ -15,38 +13,26 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
 )
 
-
 add_message_files(
   FILES
   servo_command.msg
   servo_position.msg
 )
 
-
 generate_messages(
   DEPENDENCIES
   std_msgs
 )
 
-catkin_package()
-
-
-
-
-
 include_directories(include ${catkin_INCLUDE_DIRS})
-
-
 
 add_executable(
   lynx_motion_simulator
   src/virtual_controller.cpp 
   src/lynx_motion_simulator.cpp)
 
-
 add_dependencies(lynx_motion_simulator al5d_simulation_generate_messages_cpp)
 target_link_libraries(lynx_motion_simulator ${catkin_LIBRARIES})
-
 
 add_executable(
   virtual_servo
@@ -56,11 +42,9 @@ add_executable(
 add_dependencies(virtual_servo al5d_simulation_generate_messages_cpp)
 target_link_libraries(virtual_servo ${catkin_LIBRARIES})
 
-
 add_executable(publisher src/publisher.cpp)
 add_dependencies(publisher al5d_simulation_generate_messages_cpp)
 target_link_libraries(publisher ${catkin_LIBRARIES})
-
 
 add_executable(
 cup_simulator
@@ -69,15 +53,4 @@ src/cup.cpp)
 add_dependencies(cup_simulator al5d_simulation_generate_messages_cpp)
 target_link_libraries(cup_simulator ${catkin_LIBRARIES})
 
-include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
-)
-
-
-
-
-
-
-
-
+include_directories(${catkin_INCLUDE_DIRS})
