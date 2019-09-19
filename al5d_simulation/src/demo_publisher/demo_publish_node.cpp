@@ -8,15 +8,17 @@ namespace
 {
   const double LOOP_RATE = 0.75;
   const uint8_t QUEUE_SIZE = 1;
-  const uint8_t MINIMAL_ARGUMENTS = 2;
+  const uint8_t MINIMAL_ARGUMENTS = 5;
+  const uint8_t START_UP_TIME = 5;
 }
 
 int main(int argc, char** argv)
 {
-  std::ifstream myfile(argv[1]);
+  std::cout << argv[1] << std::endl;
+  std::ifstream myfile(argv[2]);
   if (argc != MINIMAL_ARGUMENTS)  
   {
-    ROS_ERROR("Not enough arguments are given, %d given", argc);
+    ROS_ERROR("Not enough arguments are dfdfdffd given, %d given", argc);
     return 1;
   }
 
@@ -26,13 +28,14 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  ros::init(argc, argv, "Publisher");
+  ros::init(argc, argv, "publisher");
   ros::NodeHandle node_handle;
   ros::Rate loop_rate(LOOP_RATE);
   std_msgs::String commandMsg;
   ros::Publisher msg_publisher = node_handle.advertise<std_msgs::String>("msgPublisher", QUEUE_SIZE);
 
   ROS_INFO("Robot arm simulation demo started");
+  ros::Duration(START_UP_TIME).sleep();
 
   std::string line = "";
   if (myfile.is_open())

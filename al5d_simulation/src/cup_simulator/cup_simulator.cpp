@@ -14,7 +14,7 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  ros::init(argc, argv, "CupSimulation");
+  ros::init(argc, argv, "CupSimulator");
 
   Position cup_position;
   cup_position.x_pos = atof(argv[1]);

@@ -124,7 +124,6 @@ void VirtualController::parseMessage(const std_msgs::String& incoming_message)
       }
       case '\r':
       {
-        ROS_INFO_STREAM("Publish Message #" << (int) m_servo_message.channel << "P" << m_servo_message.pwm << "S" << m_servo_message.speed  << "T" << m_servo_message.time);
         m_publisher.publish(m_servo_message);
         end_line = true;
         break;

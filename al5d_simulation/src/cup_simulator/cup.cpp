@@ -18,7 +18,6 @@ namespace
 
 Cup::Cup(std::string cup_name, Position cup_position) : m_cup_name(cup_name), m_cup_position(cup_position)
 {
-
   initializeCup();
   initializeRosWorld();
   m_publisher = m_node_handle.advertise<visualization_msgs::Marker>(cup_name, 1);
