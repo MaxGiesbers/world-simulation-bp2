@@ -25,7 +25,8 @@ private:
   tf::StampedTransform m_transform;
   tf::TransformListener m_listener;
   State m_cup_state;
-  void updateCupPosition(tf::StampedTransform& tf_grippper_right_cup, tf::StampedTransform& tf_grippper_left_cup, tf::StampedTransform& tf_world_cup);
+  void updateCupPosition(tf::StampedTransform& tf_grippper_right_cup, tf::StampedTransform& tf_grippper_left_cup,
+                         tf::StampedTransform& tf_world_cup);
   void publishCupStatus();
   void updateCupColor();
   void initializeCup();

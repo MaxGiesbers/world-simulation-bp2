@@ -2,19 +2,19 @@
 
 namespace
 {
-  const double CUP_DROP_SPEED = 0.01;
-  const uint8_t ROS_LOOP_RATE = 20;
-  const double CUP_X_SCALE = 0.02;
-  const double CUP_Y_SCALE = 0.02;
-  const double CUP_Z_SCALE = 0.04;
-  const double TRANSFORM_TIME_OUT = 0.5;
-  const double Y_MINIMUM_MARGIN = 0.013;
-  const double Y_MAXIMUM_MARGIN = 0.023;
-  const double X_MINIMUM_MARGIN = 0.005;
-  const double X_MAXIMUM_MARGIN = 0.018;
-  const double Z_MINIMUM_MARGIN = 0.002;
-  const double Z_MAXIMUM_MARGIN = 0.017;
-}
+const double CUP_DROP_SPEED = 0.01;
+const uint8_t ROS_LOOP_RATE = 20;
+const double CUP_X_SCALE = 0.02;
+const double CUP_Y_SCALE = 0.02;
+const double CUP_Z_SCALE = 0.04;
+const double TRANSFORM_TIME_OUT = 0.5;
+const double Y_MINIMUM_MARGIN = 0.013;
+const double Y_MAXIMUM_MARGIN = 0.023;
+const double X_MINIMUM_MARGIN = 0.005;
+const double X_MAXIMUM_MARGIN = 0.018;
+const double Z_MINIMUM_MARGIN = 0.002;
+const double Z_MAXIMUM_MARGIN = 0.017;
+}  // namespace
 
 Cup::Cup(std::string cup_name, Position cup_position) : m_cup_name(cup_name), m_cup_position(cup_position)
 {
@@ -73,7 +73,7 @@ void Cup::simulate()
 
 void Cup::updateCupColor()
 {
-  switch(m_cup_state)
+  switch (m_cup_state)
   {
     case State::Grabbed:
     {
@@ -85,15 +85,15 @@ void Cup::updateCupColor()
     }
     case State::Dropping:
     {
-      m_cup_marker.color.a = 1.0;  
+      m_cup_marker.color.a = 1.0;
       m_cup_marker.color.r = 255;
       m_cup_marker.color.g = 0;
       m_cup_marker.color.b = 0;
       break;
-    } 
+    }
     case State::Released:
     {
-      m_cup_marker.color.a = 1.0;  
+      m_cup_marker.color.a = 1.0;
       m_cup_marker.color.r = 255;
       m_cup_marker.color.g = 255;
       m_cup_marker.color.b = 255;
@@ -102,22 +102,23 @@ void Cup::updateCupColor()
   }
 }
 
-bool Cup::cupGrapped(const tf::StampedTransform& tf_grippper_right_cup, const tf::StampedTransform& tf_grippper_left_cup)
+bool Cup::cupGrapped(const tf::StampedTransform& tf_grippper_right_cup,
+                     const tf::StampedTransform& tf_grippper_left_cup)
 {
   double diff_right_x = tf_grippper_right_cup.getOrigin().x();
   double diff_right_y = tf_grippper_right_cup.getOrigin().y();
   double diff_right_z = tf_grippper_right_cup.getOrigin().z();
 
-  double diff_left_x = tf_grippper_left_cup.getOrigin().x() ;
-  double diff_left_y = tf_grippper_left_cup.getOrigin().y() ;
-  double diff_left_z = tf_grippper_left_cup.getOrigin().z() ;
-   
-  return (std::abs(diff_right_y) < Y_MAXIMUM_MARGIN && std::abs(diff_right_y) > Y_MINIMUM_MARGIN
-      && std::abs(diff_left_y) < Y_MAXIMUM_MARGIN && std::abs(diff_left_y) > Y_MINIMUM_MARGIN
-      && std::abs(diff_right_x) < X_MAXIMUM_MARGIN && std::abs(diff_right_x) > X_MINIMUM_MARGIN
-      && std::abs(diff_left_x) < X_MAXIMUM_MARGIN && std::abs(diff_left_x) > X_MINIMUM_MARGIN
-      && std::abs(diff_left_z) < Z_MAXIMUM_MARGIN && std::abs(diff_left_z) > Z_MINIMUM_MARGIN
-      && std::abs(diff_right_z) < Z_MAXIMUM_MARGIN && std::abs(diff_right_z) > Z_MINIMUM_MARGIN);
+  double diff_left_x = tf_grippper_left_cup.getOrigin().x();
+  double diff_left_y = tf_grippper_left_cup.getOrigin().y();
+  double diff_left_z = tf_grippper_left_cup.getOrigin().z();
+
+  return (std::abs(diff_right_y) < Y_MAXIMUM_MARGIN && std::abs(diff_right_y) > Y_MINIMUM_MARGIN &&
+          std::abs(diff_left_y) < Y_MAXIMUM_MARGIN && std::abs(diff_left_y) > Y_MINIMUM_MARGIN &&
+          std::abs(diff_right_x) < X_MAXIMUM_MARGIN && std::abs(diff_right_x) > X_MINIMUM_MARGIN &&
+          std::abs(diff_left_x) < X_MAXIMUM_MARGIN && std::abs(diff_left_x) > X_MINIMUM_MARGIN &&
+          std::abs(diff_left_z) < Z_MAXIMUM_MARGIN && std::abs(diff_left_z) > Z_MINIMUM_MARGIN &&
+          std::abs(diff_right_z) < Z_MAXIMUM_MARGIN && std::abs(diff_right_z) > Z_MINIMUM_MARGIN);
 }
 
 void Cup::publishCupStatus()
@@ -130,24 +131,25 @@ void Cup::publishCupStatus()
     m_listener.waitForTransform("world", m_cup_name, ros::Time(0), ros::Duration(TRANSFORM_TIME_OUT));
     m_listener.waitForTransform("gripper_right", m_cup_name, ros::Time(0), ros::Duration(TRANSFORM_TIME_OUT));
     m_listener.waitForTransform("gripper_left", m_cup_name, ros::Time(0), ros::Duration(TRANSFORM_TIME_OUT));
-    
+
     m_listener.lookupTransform("world", m_cup_name, ros::Time(0), tf_world_cup);
 
-    if (m_listener.canTransform("gripper_right", m_cup_name, ros::Time(0)) && m_listener.canTransform("gripper_left", m_cup_name, ros::Time(0)))
+    if (m_listener.canTransform("gripper_right", m_cup_name, ros::Time(0)) &&
+        m_listener.canTransform("gripper_left", m_cup_name, ros::Time(0)))
     {
       m_listener.lookupTransform("gripper_right", m_cup_name, ros::Time(0), tf_gripper_right_cup);
       m_listener.lookupTransform("gripper_left", m_cup_name, ros::Time(0), tf_gripper_left_cup);
     }
 
-    if (cupGrapped(tf_gripper_right_cup,tf_gripper_left_cup))
+    if (cupGrapped(tf_gripper_right_cup, tf_gripper_left_cup))
     {
       m_cup_state = State::Grabbed;
     }
     else if (m_cup_position.z_pos < tf_world_cup.getOrigin().z())
-    {    
+    {
       m_cup_state = State::Dropping;
     }
-    else 
+    else
     {
       m_cup_state = State::Released;
     }
@@ -155,7 +157,6 @@ void Cup::publishCupStatus()
     updateCupPosition(tf_gripper_right_cup, tf_gripper_left_cup, tf_world_cup);
     updateCupColor();
     m_publisher.publish(m_cup_marker);
-
   }
   catch (tf::TransformException& ex)
   {
@@ -163,12 +164,13 @@ void Cup::publishCupStatus()
   }
 }
 
-void Cup::updateCupPosition(tf::StampedTransform& tf_grippper_right_cup, tf::StampedTransform& tf_grippper_left_cup, tf::StampedTransform& tf_world_cup )
+void Cup::updateCupPosition(tf::StampedTransform& tf_grippper_right_cup, tf::StampedTransform& tf_grippper_left_cup,
+                            tf::StampedTransform& tf_world_cup)
 {
-  switch(m_cup_state)
+  switch (m_cup_state)
   {
     case State::Grabbed:
-    { 
+    {
       m_world_transform.header.frame_id = "gripper_right";
       m_world_transform.transform.translation.x = tf_grippper_right_cup.getOrigin().x();
       m_world_transform.transform.translation.y = tf_grippper_right_cup.getOrigin().y();

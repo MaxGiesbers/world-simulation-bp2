@@ -1,13 +1,13 @@
 #include "al5d_simulator/lynx_motion_simulator.hpp"
 #include <thread>
 
-namespace 
+namespace
 {
-  const uint8_t THREAD_SLEEP_DURATION = 15;
-  const uint16_t QUEUE_SIZE = 1000; 
-  const double DEGREES = M_PI / 180;
-  const uint8_t ARRAY_SIZE = 7;
-}
+const uint8_t THREAD_SLEEP_DURATION = 15;
+const uint16_t QUEUE_SIZE = 1000;
+const double DEGREES = M_PI / 180;
+const uint8_t ARRAY_SIZE = 7;
+}  // namespace
 
 LynxMotionSimulator::LynxMotionSimulator(const Position& a_robot_arm_position)
   : m_robot_arm_position(a_robot_arm_position)
@@ -40,7 +40,6 @@ void LynxMotionSimulator::initializeJoints()
   {
     m_joint_state.position[i] = 0;
   }
-  //publishStatesOfJoints();
 }
 
 void LynxMotionSimulator::publishStatesOfJoints()
@@ -59,7 +58,6 @@ LynxMotionSimulator::~LynxMotionSimulator()
 
 void LynxMotionSimulator::callBack(const al5d_simulation::servo_position& servo_position)
 {
-  
   std::lock_guard<std::mutex> guard(m_angle_mutex);
   m_joint_state.header.stamp = ros::Time::now();
 

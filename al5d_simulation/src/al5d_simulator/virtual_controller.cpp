@@ -3,10 +3,10 @@
 
 namespace
 {
-  const uint8_t MINIMAL_ARGUMENTS = 6;
-  const uint8_t ROS_LOOP_RATE = 20;
-  const uint16_t QUEUE_SIZE = 1000; 
-}
+const uint8_t MINIMAL_ARGUMENTS = 6;
+const uint8_t ROS_LOOP_RATE = 20;
+const uint16_t QUEUE_SIZE = 1000;
+}  // namespace
 
 VirtualController::VirtualController(const Position& robot_arm_position) : m_command_character('\0')
 {
@@ -151,7 +151,7 @@ int main(int argc, char** argv)
     ROS_ERROR("Not enough arguments are given , %d given", argc);
     return 1;
   }
-  
+
   // initialize position robotarm
   Position robot_arm_position;
   robot_arm_position.x_pos = atof(argv[1]);

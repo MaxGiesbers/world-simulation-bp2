@@ -4,19 +4,19 @@
 #include <fstream>
 #include "std_msgs/String.h"
 
-namespace 
+namespace
 {
-  const double LOOP_RATE = 0.75;
-  const uint8_t QUEUE_SIZE = 1;
-  const uint8_t MINIMAL_ARGUMENTS = 5;
-  const uint8_t START_UP_TIME = 5;
-}
+const double LOOP_RATE = 0.75;
+const uint8_t QUEUE_SIZE = 1;
+const uint8_t MINIMAL_ARGUMENTS = 5;
+const uint8_t START_UP_TIME = 5;
+}  // namespace
 
 int main(int argc, char** argv)
 {
   std::cout << argv[1] << std::endl;
   std::ifstream myfile(argv[2]);
-  if (argc != MINIMAL_ARGUMENTS)  
+  if (argc != MINIMAL_ARGUMENTS)
   {
     ROS_ERROR("Not enough arguments are dfdfdffd given, %d given", argc);
     return 1;

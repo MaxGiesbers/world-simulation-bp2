@@ -3,7 +3,7 @@
 
 namespace
 {
-  const uint8_t MINIMAL_ARGUMENTS = 7;
+const uint8_t MINIMAL_ARGUMENTS = 7;
 }
 
 int main(int argc, char** argv)

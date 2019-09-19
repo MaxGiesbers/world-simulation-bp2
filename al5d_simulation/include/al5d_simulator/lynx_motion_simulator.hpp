@@ -19,6 +19,7 @@ private:
 
   void initializeJoints();
   void callBack(const al5d_simulation::servo_position& servo_position);
+
 public:
   LynxMotionSimulator(const Position& a_robot_arm_position);
   ~LynxMotionSimulator();
