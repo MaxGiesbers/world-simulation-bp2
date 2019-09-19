@@ -4,10 +4,17 @@
 #include <fstream>
 #include "std_msgs/String.h"
 
+namespace 
+{
+  const double LOOP_RATE = 0.75;
+  const uint8_t QUEUE_SIZE = 1;
+  const uint8_t MINIMAL_ARGUMENTS = 2;
+}
+
 int main(int argc, char** argv)
 {
   std::ifstream myfile(argv[1]);
-  if (argc != 2)  
+  if (argc != MINIMAL_ARGUMENTS)  
   {
     ROS_ERROR("Not enough arguments are given, %d given", argc);
     return 1;
@@ -16,14 +23,16 @@ int main(int argc, char** argv)
   if (myfile.fail())
   {
     ROS_ERROR("Path or file unreadable ");
-    return -1;
+    return 1;
   }
 
   ros::init(argc, argv, "Publisher");
-  ros::NodeHandle n;
-  ros::Rate loop_rate(30);
+  ros::NodeHandle node_handle;
+  ros::Rate loop_rate(LOOP_RATE);
   std_msgs::String commandMsg;
-  ros::Publisher msg_publisher = n.advertise<std_msgs::String>("msgPublisher", 1);
+  ros::Publisher msg_publisher = node_handle.advertise<std_msgs::String>("msgPublisher", QUEUE_SIZE);
+
+  ROS_INFO("Robot arm simulation demo started");
 
   std::string line = "";
   if (myfile.is_open())
@@ -51,5 +60,7 @@ int main(int argc, char** argv)
   {
     ROS_ERROR("Unable to open file");
   }
+
+  ROS_INFO("Robot arm simulation demo finished");
   return 0;
 }

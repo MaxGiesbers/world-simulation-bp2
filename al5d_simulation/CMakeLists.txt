@@ -28,28 +28,28 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(
   lynx_motion_simulator
-  src/virtual_controller.cpp 
-  src/lynx_motion_simulator.cpp)
+  src/al5d_simulator/virtual_controller.cpp 
+  src/al5d_simulator/lynx_motion_simulator.cpp)
 
 add_dependencies(lynx_motion_simulator al5d_simulation_generate_messages_cpp)
 target_link_libraries(lynx_motion_simulator ${catkin_LIBRARIES})
 
 add_executable(
   virtual_servo
-  src/virtual_servo.cpp
+  src/al5d_simulator/virtual_servo.cpp
 )
 
 add_dependencies(virtual_servo al5d_simulation_generate_messages_cpp)
 target_link_libraries(virtual_servo ${catkin_LIBRARIES})
 
-add_executable(publisher src/publisher.cpp)
-add_dependencies(publisher al5d_simulation_generate_messages_cpp)
-target_link_libraries(publisher ${catkin_LIBRARIES})
+add_executable(demo_publish_node src/demo_publisher/demo_publish_node.cpp)
+add_dependencies(demo_publish_node al5d_simulation_generate_messages_cpp)
+target_link_libraries(demo_publish_node ${catkin_LIBRARIES})
 
 add_executable(
 cup_simulator
-src/cup_simulator.cpp
-src/cup.cpp)
+src/cup_simulator/cup_simulator.cpp
+src/cup_simulator/cup.cpp)
 add_dependencies(cup_simulator al5d_simulation_generate_messages_cpp)
 target_link_libraries(cup_simulator ${catkin_LIBRARIES})
 

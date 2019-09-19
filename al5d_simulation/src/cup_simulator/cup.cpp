@@ -1,4 +1,4 @@
-#include "cup.hpp"
+#include "cup_simulator/cup.hpp"
 
 namespace
 {

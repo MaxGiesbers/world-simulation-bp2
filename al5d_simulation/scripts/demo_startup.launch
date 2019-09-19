@@ -1,0 +1,15 @@
+<launch>
+        <param name="robot_description" command="cat $(find al5d_simulation)/urdf/lynxmotion_arm.urdf" />
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+        <arg name="rvizconfig" default="$(find al5d_simulation)/rviz/urdf.rviz" />
+        <node name="lynx_motion_simulator" pkg="al5d_simulation" type="lynx_motion_simulator" output="screen"  args="0 0 0" />
+        <node name="virtual_servo_0" pkg="al5d_simulation" type="virtual_servo" output="screen" args="0" />
+        <node name="virtual_servo_1" pkg="al5d_simulation" type="virtual_servo" output="screen" args="1" />
+        <node name="virtual_servo_2" pkg="al5d_simulation" type="virtual_servo" output="screen" args="2" />
+        <node name="virtual_servo_3" pkg="al5d_simulation" type="virtual_servo" output="screen" args="3" />
+        <node name="virtual_servo_4" pkg="al5d_simulation" type="virtual_servo" output="screen" args="4" />
+        <node name="virtual_servo_5" pkg="al5d_simulation" type="virtual_servo" output="screen" args="5" />
+        <node name="virtual_servo_6" pkg="al5d_simulation" type="virtual_servo" output="screen" args="6" />
+        <node name="cup_simulator" pkg="al5d_simulation" type="cup_simulator" output="screen"  args="-0.3 0.0 0.02 cup_1" /> 
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" /> -->
+</launch>

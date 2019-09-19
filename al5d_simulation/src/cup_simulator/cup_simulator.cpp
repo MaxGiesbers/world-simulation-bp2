@@ -1,5 +1,5 @@
 #include <tf/transform_listener.h>
-#include "cup.hpp"
+#include "cup_simulator/cup.hpp"
 
 namespace
 {

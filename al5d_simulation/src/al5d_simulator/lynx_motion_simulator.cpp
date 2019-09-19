@@ -1,4 +1,4 @@
-#include "lynx_motion_simulator.hpp"
+#include "al5d_simulator/lynx_motion_simulator.hpp"
 #include <thread>
 
 namespace 
@@ -35,6 +35,7 @@ void LynxMotionSimulator::initializeJoints()
   m_joint_state.name[4] = "wrist2hand";
   m_joint_state.name[5] = "gripper_left2hand";
   m_joint_state.name[6] = "gripper_right2hand";
+
   for (size_t i = 0; i < m_joint_state.position.size(); i++)
   {
     m_joint_state.position[i] = 0;

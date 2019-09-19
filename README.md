@@ -12,7 +12,7 @@ export LC_NUMERIC="en_US.UTF-8"
 path to text file: 
 Run publisher
 
-rosrun al5d_simulation publisher src/world-simulation-bp2/al5d_simulation/config/commands.txt
+rosrun al5d_simulation demo_publish_node src/world-simulation-bp2/al5d_simulation/demo/demo_commands.txt
 
 Virtual controller needs arguments for position of the arm.
 rosrun al5d_simulation VirtualController 0.0 0.0 0.0
