@@ -14,11 +14,10 @@ const uint8_t START_UP_TIME = 5;
 
 int main(int argc, char** argv)
 {
-  std::cout << argv[1] << std::endl;
   std::ifstream myfile(argv[2]);
   if (argc != MINIMAL_ARGUMENTS)
   {
-    ROS_ERROR("Not enough arguments are dfdfdffd given, %d given", argc);
+    ROS_ERROR("Not enough arguments are given, %d given", argc);
     return 1;
   }
 
@@ -28,11 +27,11 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  ros::init(argc, argv, "publisher");
+  ros::init(argc, argv, "commandPublisher");
   ros::NodeHandle node_handle;
   ros::Rate loop_rate(LOOP_RATE);
   std_msgs::String commandMsg;
-  ros::Publisher msg_publisher = node_handle.advertise<std_msgs::String>("msgPublisher", QUEUE_SIZE);
+  ros::Publisher msg_publisher = node_handle.advertise<std_msgs::String>("command_publisher", QUEUE_SIZE);
 
   ROS_INFO("Robot arm simulation demo started");
   ros::Duration(START_UP_TIME).sleep();

@@ -10,7 +10,7 @@ const uint16_t QUEUE_SIZE = 1000;
 
 VirtualController::VirtualController(const Position& robot_arm_position) : m_command_character('\0')
 {
-  m_subscriber = m_node_handle.subscribe("msgPublisher", QUEUE_SIZE, &VirtualController::parseMessage, this);
+  m_subscriber = m_node_handle.subscribe("command_publisher", QUEUE_SIZE, &VirtualController::parseMessage, this);
   m_publisher = m_node_handle.advertise<al5d_simulation::servo_command>("servo_command", QUEUE_SIZE);
 }
 
@@ -101,6 +101,9 @@ void VirtualController::parseMessage(const std_msgs::String& incoming_message)
           send_command = false;
         }
         m_servo_message.channel = stoi(command);
+        m_servo_message.speed = 0;
+        m_servo_message.time = 0;
+
         send_command = true;
         break;
       }

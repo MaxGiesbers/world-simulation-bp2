@@ -42,9 +42,9 @@ add_executable(
 add_dependencies(virtual_servo al5d_simulation_generate_messages_cpp)
 target_link_libraries(virtual_servo ${catkin_LIBRARIES})
 
-add_executable(demo_publish_node src/demo_publisher/demo_publish_node.cpp)
-add_dependencies(demo_publish_node al5d_simulation_generate_messages_cpp)
-target_link_libraries(demo_publish_node ${catkin_LIBRARIES})
+add_executable(demo_publisher src/demo_publisher/demo_publisher.cpp)
+add_dependencies(demo_publisher al5d_simulation_generate_messages_cpp)
+target_link_libraries(demo_publisher ${catkin_LIBRARIES})
 
 add_executable(
 cup_simulator

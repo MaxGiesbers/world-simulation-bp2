@@ -11,6 +11,6 @@
         <node name="virtual_servo_5" pkg="al5d_simulation" type="virtual_servo" output="screen" args="5" />
         <node name="virtual_servo_6" pkg="al5d_simulation" type="virtual_servo" output="screen" args="6" />
         <node name="cup_1" pkg="al5d_simulation" type="cup_simulator" output="screen"  args="-0.3 0.0 0.02 cup_1" /> 
-        <node name="demo_publish_node" pkg="al5d_simulation" type="demo_publish_node" output="screen" args="cat $(find al5d_simulation)/demo/grap_one_cup.txt" />
+        <node name="demo_publisher" pkg="al5d_simulation" type="demo_publisher" output="screen" args="cat $(find al5d_simulation)/demo/grap_one_cup.txt" />
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" /> -->
 </launch>

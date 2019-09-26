@@ -1,4 +1,3 @@
-
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "al5d_simulation/servo_command.h"
