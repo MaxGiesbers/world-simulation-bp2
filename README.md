@@ -40,4 +40,9 @@ info over de servos
 
 
 
+clang-format-3.8 -i -style=file MY_ROS_NODE.cpp
+
+find . -name '*.h' -or -name '*.h' -or -name '*.cpp' | xargs clang-format -i -style=file $1
+
+
 

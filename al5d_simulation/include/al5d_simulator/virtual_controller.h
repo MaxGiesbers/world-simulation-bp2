@@ -1,7 +1,10 @@
+#ifndef VIRTUAL_CONTROLLER_H
+#define VIRTUAL_CONTROLLER_H
+
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "al5d_simulation/servo_command.h"
-#include "lynx_motion_simulator.hpp"
+#include "lynx_motion_simulator.h"
 
 class VirtualController
 {
@@ -21,3 +24,5 @@ public:
   VirtualController(const Position& robot_arm_position);
   ~VirtualController();
 };
+
+#endif

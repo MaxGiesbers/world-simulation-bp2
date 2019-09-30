@@ -1,3 +1,6 @@
+#ifndef VIRTUAL_SERVO_H
+#define VIRTUAL_SERVO_H
+
 #include "ros/ros.h"
 #include "al5d_simulation/servo_position.h"
 #include "al5d_simulation/servo_command.h"
@@ -25,3 +28,5 @@ public:
   VirtualServo(uint8_t channel);
   ~VirtualServo();
 };
+
+#endif

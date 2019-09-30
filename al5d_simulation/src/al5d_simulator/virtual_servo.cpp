@@ -1,4 +1,4 @@
-#include "al5d_simulator/virtual_servo.hpp"
+#include "al5d_simulator/virtual_servo.h"
 #include <thread>
 
 namespace

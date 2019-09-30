@@ -1,8 +1,11 @@
+#ifndef LYNX_MOTION_SIMULATOR_H
+#define LYNX_MOTION_SIMULATOR_H
+
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
 #include <tf/transform_broadcaster.h>
 #include "al5d_simulation/servo_position.h"
-#include "position.hpp"
+#include "position.h"
 #include <mutex>
 
 class LynxMotionSimulator
@@ -25,3 +28,5 @@ public:
   ~LynxMotionSimulator();
   void publishStatesOfJoints();
 };
+
+#endif

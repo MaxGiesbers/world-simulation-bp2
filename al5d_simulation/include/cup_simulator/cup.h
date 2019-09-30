@@ -1,5 +1,8 @@
+#ifndef CUP_H
+#define CUP_H
+
 #include <ros/ros.h>
-#include "al5d_simulator/position.hpp"
+#include "al5d_simulator/position.h"
 #include <visualization_msgs/Marker.h>
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
@@ -38,3 +41,5 @@ public:
   ~Cup();
   void simulate();
 };
+
+#endif

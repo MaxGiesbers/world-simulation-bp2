@@ -1,4 +1,4 @@
-#include "al5d_simulator/lynx_motion_simulator.hpp"
+#include "al5d_simulator/lynx_motion_simulator.h"
 #include <thread>
 
 namespace
