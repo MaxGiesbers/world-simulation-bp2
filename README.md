@@ -46,3 +46,4 @@ find . -name '*.h' -or -name '*.h' -or -name '*.cpp' | xargs clang-format -i -st
 
 
 
+# robot-kinematica
